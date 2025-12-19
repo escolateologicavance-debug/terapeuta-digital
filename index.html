@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terapeuta Digital | SYNCHRO</title>
+
+<style>
+body{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background:#f8f9fa;
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    color:#2c3e50;
+    text-align:center;
+}
+
+/* ===== HEADER ===== */
+header{
+    margin-top:40px;
+}
+
+.logo{
+    max-width:180px;
+    height:auto;
+    display:block;
+    margin:0 auto 12px auto;
+}
+
+h1{
+    font-size:28px;
+    margin:5px 0;
+}
+
+.subtitulo{
+    font-size:15px;
+    font-weight:600;
+    color:#7f8c8d;
+    letter-spacing:1px;
+}
+
+/* ===== MAIN ===== */
+main{
+    width:100%;
+    max-width:420px;
+}
+
+p{
+    font-size:18px;
+}
+
+/* ===== GAUGE ===== */
+.gauge-container{
+    position:relative;
+    width:300px;
+    height:150px;
+    margin:25px auto;
+    overflow:hidden;
+}
+
+.gauge-body{
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    background:conic-gradient(
+        #ff4d4d 0deg 60deg,
+        #ffcc00 60deg 120deg,
+        #2ecc71 120deg 180deg
+    );
+    mask:radial-gradient(circle, transparent 65%, black 66%);
+    -webkit-mask:radial-gradient(circle, transparent 65%, black 66%);
+    transform:rotate(-90deg);
+}
+
+.pointer{
+    position:absolute;
+    bottom:0;
+    left:50%;
+    width:5px;
+    height:125px;
+    background:#2c3e50;
+    border-radius:4px;
+    transform-origin:bottom center;
+    transform:translateX(-50%) rotate(0deg);
+    transition:transform 1.4s cubic-bezier(.17,.67,.83,.67);
+}
+
+/* ===== BUTTON ===== */
+.btn-calculadora{
+    background:#2c3e50;
+    color:#fff;
+    border:none;
+    padding:18px 38px;
+    font-size:17px;
+    font-weight:bold;
+    border-radius:14px;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+
+/* ===== FOOTER ===== */
+footer{
+    margin-bottom:35px;
+}
+
+.frase-impacto{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.assinatura{
+    font-size:15px;
+    opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="synchro.png" class="logo">
+    <h1>Terapeuta Digital</h1>
+    <div class="subtitulo">Desinstalação do Caos</div>
+</header>
+
+<main>
+    <p>Como está o seu nível emocional agora?</p>
+
+    <div class="gauge-container">
+        <div class="gauge-body"></div>
+        <div id="ponteiro" class="pointer"></div>
+    </div>
+
+    <p><strong>Deseja avaliar seu estado emocional agora?</strong></p>
+    <button class="btn-calculadora" onclick="move()">Simular Calculadora SC</button>
+</main>
+
+<footer>
+    <span class="frase-impacto">Gestão Emocional — sua melhor versão</span><br>
+    <span class="assinatura">Gilberto Moreira | CBO 2515-50</span>
+</footer>
+
+<script>
+function move(){
+    document.getElementById("ponteiro")
+        .style.transform="translateX(-50%) rotate(70deg)";
+}
+</script>
+
+</body>
+</html>
