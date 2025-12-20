@@ -29,6 +29,41 @@ button { width: 100%; padding: 16px; font-size: 1.1em; font-weight: bold; border
 </style>
 </head>
 <body>
+  <script>
+const idsAutorizados = [
+  "SEU-ID-AQUI", // Cole aqui o seu ID para você conseguir entrar
+  "ID-DO-CLIENTE-1"
+];
+
+(function () {
+  const KEY = "synkro_device_id";
+  let deviceId = localStorage.getItem(KEY);
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem(KEY, deviceId);
+  }
+
+  const estaAutorizado = idsAutorizados.includes(deviceId);
+
+  window.onload = function() {
+    if (!estaAutorizado) {
+      document.body.innerHTML = `
+        <div style="padding:50px 20px; text-align:center; font-family:sans-serif;">
+          <h2>Acesso Restrito</h2>
+          <p>Seu acesso ainda não foi ativado.</p>
+          <div style="background:#eee; padding:10px; margin:20px 0; font-size:0.8em;">
+            ID DO SEU APARELHO:<br><strong>${deviceId}</strong>
+          </div>
+          <button onclick="window.location.href='https://wa.me/5566999390073?text=Ativar%20ID:%20${deviceId}'" 
+            style="padding:15px; background:#16a085; color:#fff; border:none; border-radius:10px; font-weight:bold;">
+            Ativar via WhatsApp
+          </button>
+        </div>`;
+    }
+  };
+})();
+</script>
+
 <div class="container">
   <div class="topo">
     <div class="avatar"><img src="avatar.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"></div>
