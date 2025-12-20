@@ -1,40 +1,471 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<link rel="manifest" href="manifest.json?v=6">
+<link rel="manifest" href="manifest.json?v=10">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terapeuta Digital - Gilberto Moreira</title>
 <style>
 :root { --fundo: #f8f9fa; --azul: #0b3c5d; --verde: #16a085; --laranja: #e67e22; --vermelho: #c0392b; }
 body { font-family: 'Segoe UI', sans-serif; background: var(--fundo); text-align: center; padding: 10px; margin: 0; }
-.container { max-width: 450px; margin: 15px auto; background: #fff; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 750px; display: flex; flex-direction: column; }
-
+.container { max-width: 450px; margin: 15px auto; background: #fff; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 750px; height: auto; display: flex; flex-direction: column; }
 .topo { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; text-align: left; }
 .avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--verde); overflow: hidden; background: #ddd; flex-shrink: 0; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
-
 .medidor-box { position: relative; width: 260px; height: 130px; margin: 20px auto; background: conic-gradient(from 270deg at 50% 100%, #e74c3c 0%, #f1c40f 45%, #2ecc71 100%); border-radius: 130px 130px 0 0; border: 5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .ponteiro-container { position: absolute; bottom: 0; left: 50%; width: 0; height: 0; }
 .ponteiro { position: absolute; bottom: 0; left: 0; width: 100px; height: 4px; background: #333; transform-origin: left center; transform: rotate(-180deg); transition: transform 2s cubic-bezier(0.17, 0.67, 0.83, 0.67); z-index: 10; border-radius: 4px; }
-
 .menu-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
 button { width: 100%; padding: 16px; font-size: 1.1em; font-weight: bold; border-radius: 15px; border: none; background: var(--azul); color: #fff; cursor: pointer; }
-.btn-crise { background: #f8f9fa; color: var(--azul); border: 1px solid #ddd; text-align: left; padding-left: 15px; font-size: 0.95em; }
-
-.caixa-suporte { text-align: left; background: #fdfaf5; padding: 20px; border-radius: 15px; border-left: 6px solid var(--laranja); margin-top: 15px; display: none; line-height: 1.6; }
+.btn-crise { background: #f8f9fa; color: var(--azul); border: 1px solid #ddd; text-align: left; padding-left: 15px; font-size: 0.95em; margin-bottom: 5px; }
+/* AJUSTE PARA O TEXTO NÃO CORTAR MAIS */
+.caixa-suporte { text-align: left; background: #fdfaf5; padding: 20px; border-radius: 15px; border-left: 6px solid var(--laranja); margin-top: 15px; display: none; line-height: 1.6; height: auto; min-height: 100px; }
 .texto-biblico { display: block; margin-top: 12px; font-weight: bold; color: var(--azul); border-top: 1px solid #eee; padding-top: 10px; font-style: italic; font-size: 0.9em; }
-
-.rodape { margin-top: auto; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.75em; color: #7f8c8d; }
+.rodape { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.75em; color: #7f8c8d; }
 .alerta-vermelho { color: var(--vermelho); font-weight: bold; margin-bottom: 8px; display: block; }
-
 #plano-autoavaliacao, #plano-resultado, #plano-conteudo, #plano-crises { display: none; }
+/* TRAVA PARA O CAMPO DE NOTA */
+.nota { width: 50px; text-align: center; border-radius: 5px; border: 1px solid #ccc; padding: 5px; font-weight: bold; }
 </style>
 </head>
 <body>
-
 <div class="container">
   <div class="topo">
+    <div class="avatar"><img src="avatar.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"></div>
+    <div style="flex:1"><h2>Terapeuta Digital</h2><small>Qualificação do Estar</small></div>
+  </div>
+  <div id="plano-recepcao"><div class="medidor-box"></div><p style="color:var(--laranja); font-weight:bold; font-size:1.3em; margin: 30px 0;">Como está o seu nível emocional agora?</p><button onclick="irPara('plano-autoavaliacao')">Simulador Emocional</button></div>
+  <div id="plano-autoavaliacao"><h3 style="color:var(--verde)">Autoavaliação (0 a 10)</h3><div id="questoes"></div><button onclick="verResultado()" style="margin-top:20px">Ver Resultado</button></div>
+  <div id="plano-resultado"><div class="medidor-box"><div class="ponteiro-container"><div class="ponteiro" id="ptr-vivo"></div></div></div><div style="font-size:4.5em; color:#f1c40f; font-weight:bold; text-shadow:2px 2px 4px rgba(0,0,0,0.2)" id="v-sc">000</div><div style="font-weight:bold; color:#7f8c8d; margin-bottom:20px">Nota MC: <span id="v-mc">0.0</span></div><button onclick="irPara('plano-conteudo')">Acessar Conteúdo</button></div>
+  <div id="plano-conteudo"><div class="menu-grid"><button style="background:var(--laranja)" onclick="irPara('plano-crises')">Suporte Emocional</button><button style="background:var(--verde)" onclick="mostrarConselho()">Conselho do Dia</button><button style="background:var(--vermelho)" onclick="window.location.href='https://wa.me/5566999390073'">S.O.S / SINCRO</button></div><div id="cx-conselho" class="caixa-suporte"></div><button style="background:#95a5a6; margin-top:15px; font-size:0.9em; padding:10px" onclick="irPara('plano-resultado')">Voltar ao Score</button></div>
+  <div id="plano-crises"><h3 style="color:var(--azul)">Selecione o Apoio:</h3><div class="menu-grid" style="max-height: 400px; overflow-y: auto; padding:5px;"><button class="btn-crise" onclick="msg('faltaFe')">Falta de Fé</button><button class="btn-crise" onclick="msg('indecisao')">Indecisão</button><button class="btn-crise" onclick="msg('paz')">Sem Paz</button><button class="btn-crise" onclick="msg('desilusao')">Desilusão</button><button class="btn-crise" onclick="msg('proposito')">Sem Propósitos</button><button class="btn-crise" onclick="msg('separacao')">Separação Conjugal</button><button class="btn-crise" onclick="msg('ansiedade')">Ansiedade</button><button class="btn-crise" onclick="msg('luto')">Luto</button><button class="btn-crise" onclick="msg('aborto')">Aborto</button><button class="btn-crise" onclick="msg('magoa')">Mágoa</button></div><div id="cx-suporte" class="caixa-suporte"></div><button style="background:#95a5a6; margin-top:15px" onclick="irPara('plano-conteudo')">Voltar ao Menu</button></div>
+  <div class="rodape"><span class="alerta-vermelho">Alerta: Não substitui psiquiatria. Não suspenda remédios.</span><b>Gilberto Moreira — Psicanalista | CBO 2515-50</b><br>Método SINCRO - Itanhangá-MT</div>
+</div>
+<script>
+const suporte = {
+  faltaFe: { t: "Equilíbrio em Meio à Crise: A instabilidade emocional é como um mar agitado. Retome a calma consciente para que a paz volte a reinar no seu Estar.", b: "Mateus 8:26", v: "E disse-lhes: Por que é pequena a vossa fé? E, levantando-se, repreendeu os ventos e o mar, e fez-se grande bonança." },
+  indecisao: { t: "Ordem Mental: Entregue o controle ao propósito maior para encontrar o caminho correto quando a lógica limitada falhar.", b: "Provérbios 3:5", v: "Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento." },
+  paz: { t: "Qualificação da Mente: A paz é um estado que protege seus pensamentos acima de qualquer circunstância externa.", b: "Filipenses 4:7", v: "E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos em Cristo Jesus." },
+  desilusao: { t: "Transformação do Estar: Frustrações cooperam para o seu crescimento sistêmico e amadurecimento.", b: "Romanos 8:28", v: "E sabemos que todas as coisas contribuem para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito." },
+  proposito: { t: "Destino Assistido: Existem planos de paz desenhados para o seu Estar, visando um futuro de plena esperança.", b: "Jeremias 29:11", v: "Porque eu sei os pensamentos que tenho para convosco, diz o Senhor, pensamentos de paz, e não de mal, para vos dar o fim que desejais." },
+  separacao: { t: "Reorganização Pessoal: Foque em restabelecer a ordem no seu Estar individual para um novo recomeço equilibrado.", b: "Gênesis 2:24", v: "E disse: Por isso o homem deixará o seu pai e a sua mãe, e se unirá à sua mulher, e serão uma só carne." },
+  ansiedade: { t: "Foco no Presente: Qualifique seu Estar agora, lidando apenas com as demandas reais do dia de hoje.", b: "Mateus 6.34", v: "Não vos inquieteis, pois, pelo dia de amanhã, porque o dia de amanhã cuidará de si mesmo. Basta a cada dia o seu mal." },
+  luto: { t: "Apoio Sincroclínico: Permita-se o acolhimento para que seu Estar encontre o consolo necessário para prosseguir.", b: "Salmos 34:1, 4", v: "O Senhor está perto dos que têm o coração quebrantado e salva os de espírito abatido." },
+  aborto: { t: "Amparo na Perda: Encontre conforto na verdade de que toda vida é conhecida e protegida pelo Criador desde o início.", b: "Jeremias 1:5", v: "Antes que te formasse no ventre, te conheci; e, antes que saísses da madre, te santifiquei." },
+  magoa: { t: "Liberação de Cargas: Substitua o foco na ofensa pela utilidade e pela prática do bem para restaurar sua paz.", b: "Efesios 4:27-28", v: "E não deis lugar ao diabo... antes trabalhe, fazendo com as mãos o que é bom." }
+};
+
+const frasesConselho = [
+  "A educação é a arma mais poderosa. - Nelson Mandela",
+  "Seja a mudança que você deseja ver. - Mahatma Gandhi",
+  "No fim, o que conta é a vida nos seus anos. - Abraham Lincoln",
+  "A imaginação é mais importante que o conhecimento. - Albert Einstein",
+  "O que não nos mata, nos fortalece. - Friedrich Nietzsche",
+  "Nossa glória é levantar a cada queda. - Confúcio",
+  "A única coisa a temer é o próprio medo. - Roosevelt",
+  "Penso, logo existo. - René Descartes",
+  "O sucesso é manter o entusiasmo. - Winston Churchill",
+  "A felicidade vem das suas ações. - Dalai Lama",
+  "Conhece-te a ti mesmo. - Sócrates",
+  "O sábio duvida, o sensato reflete. - Aristóteles",
+  "Felicidade é a repetição do prazer. - Schopenhauer",
+  "Paciência evita grandes desastres. - Provérbio Chinês",
+  "Remover montanhas começa com pedras pequenas. - Confúcio",
+  "A paciência é a chave do alívio. - Provérbio Árabe",
+  "Quem não entende o silêncio, não entende palavras. - Hubbard",
+  "O que o homem semear, isso colherá. - Paulo (Apóstolo)",
+  "Tudo me é lícito, nem tudo convém. - Paulo (Apóstolo)",
+  "Combati o bom combate, guardei a fé. - Paulo (Apóstolo)",
+  "A vida depende dos seus pensamentos. - Marco Aurélio",
+  "Viver significa lutar. - Sêneca",
+  "Onde há um humano, há chance para bondade. - Sêneca",
+    "A sorte é o que acontece quando a preparação encontra a oportunidade. - Sêneca",
+  "Nenhum vento sopra a favor de quem não sabe para onde vai. - Sêneca",
+  "A vida, se bem empregada, é suficientemente longa. - Sêneca",
+  "Muitas vezes sofremos mais na imaginação do que na realidade. - Sêneca",
+  "O homem que sofre antes de ser necessário, sofre mais do que o necessário. - Sêneca",
+  "Enquanto adiamos, a vida passa. - Sêneca",
+  "A adversidade é a ocasião da virtude. - Sêneca",
+  "Um mar calmo nunca fez um marinheiro habilidoso. - Provérbio Inglês",
+  "O bambu que se curva é mais forte que o carvalho que resiste. - Provérbio Japonês",
+  "Rápido é devagar, mas sem interrupções. - Provérbio Japonês",
+  "O silêncio é o ouro e a palavra é a prata. - Provérbio Árabe",
+  "Confia em Deus, mas amarra o teu camelo. - Provérbio Árabe",
+  "O erro é o portal da descoberta. - James Joyce",
+  "Sempre que estiver do lado da maioria, pare e reflita. - Mark Twain",
+  "As forças naturais dentro de nós são os verdadeiros curadores. - Hipócrates",
+  "Quem tem um porquê para viver aguenta quase qualquer como. - Nietzsche",
+  "A vida sem música seria um erro. - Nietzsche",
+  "Ninguém pode fazer você se sentir inferior sem seu consentimento. - Eleanor Roosevelt",
+  "Não conte os dias, faça os dias contarem. - Muhammad Ali",
+  "O impossível é apenas uma palavra lançada por homens pequenos. - Muhammad Ali",
+  "As mãos que ajudam são mais sagradas que os lábios que rezam. - Gandhi",
+  "A força provém de uma vontade indomável. - Gandhi",
+  "O pensamento é o ensaio da ação. - Sigmund Freud",
+  "Olhar para trás é o melhor modo de prever o futuro. - Abraham Lincoln",
+  "Não importa o quão devagar você vá, desde que não pare. - Confúcio",
+  "Onde há amor, há vida. - Mahatma Gandhi",
+  "Até você se tornar consciente, o inconsciente dirigirá sua vida. - Carl Jung",
+  "Eu não sou o que aconteceu comigo, sou o que escolhi me tornar. - Carl Jung",
+  "Sua visão se tornará clara quando olhar para o seu coração. - Carl Jung",
+  "Vencer a si próprio é a maior das vitórias. - Platão",
+  "Onde não há visão, o povo perece. - Provérbio Bíblico",
+  "Um dia sem riso é um dia desperdiçado. - Charles Chaplin",
+  "A simplicidade é o último grau de sofisticação. - Da Vinci",
+  "O aprendizado nunca esgota a mente. - Da Vinci",
+  "Eu não falhei. Encontrei caminhos que não funcionam. - Thomas Edison",
+  "Tudo parece impossível até que seja feito. - Nelson Mandela",
+  "O silêncio é um amigo que nunca trai. - Confúcio",
+  "A inteligência é a habilidade de se adaptar. - Stephen Hawking",
+  "A felicidade não é um ideal da razão, mas da imaginação. - Kant",
+  "O homem não é nada além do que faz de si mesmo. - Sartre",
+  "Mesmo a noite mais escura terminará e o sol nascerá. - Victor Hugo",
+  "O destino de um homem é o seu caráter. - Heráclito",
+  "Nada é permanente, exceto a mudança. - Heráclito",
+  "A criatividade é a inteligência se divertindo. - Einstein",
+  "Não tente ser de sucesso, mas sim de valor. - Einstein",
+  "O ponto de partida de toda conquista é o desejo. - Napoleon Hill",
+  "O coração tem razões que a própria razão desconhece. - Pascal",
+  "O que sabemos é uma gota, o que ignoramos é um oceano. - Newton",
+  "A medida do amor é amar sem medida. - Santo Agostinho",
+  "A esperança tem duas filhas: a indignação e a coragem. - Santo Agostinho",
+  "Não se pode voltar atrás, mas pode-se recomeçar agora. - Chico Xavier",
+  "Se julgar as pessoas, não terá tempo para amá-las. - Madre Teresa",
+  "A coragem é o domínio do medo, não a ausência dele. - Mark Twain",
+  "Felicidade é a certeza de que a vida não passa inutilmente. - Érico Veríssimo",
+  "Ser inteiramente honesto consigo mesmo é um bom exercício. - Freud",
+  "Onde o amor impera, não há vontade de poder. - Carl Jung",
+  "Ao tocar uma alma humana, seja apenas outra alma humana. - Carl Jung",
+  "O destino baralha as cartas, e nós jogamos. - Schopenhauer",
+  "A dúvida é o princípio da sabedoria. - Aristóteles",
+  "A sabedoria começa na reflexão. - Sócrates",
+  "Viver significa lutar. - Sêneca",
+  "Não é porque as coisas são difíceis que não ousamos. - Sêneca",
+  "A jornada de mil milhas começa com um passo. - Lao Tsé",
+  "Quem conhece a si mesmo é iluminado. - Lao Tsé",
+  "Onde não há obediência, não há virtude. - Savonarola",
+  "A oração é o escudo das almas. - Savonarola",
+  "O caráter é como uma árvore e a reputação como sua sombra. - Lincoln",
+  "Melhor calar e parecer tolo do que falar e tirar a dúvida. - Lincoln",
+  "A paciência é a chave para a alegria. - Provérbio Árabe",
+  "Errar é humano, perdoar é divino. - Alexander Pope",
+  "A gratidão é a memória do coração. - Antístenes",
+  "Para tudo há um tempo debaixo do céu. - Eclesiastes",
+  "A verdadeira liberdade é o domínio sobre si mesmo. - Montaigne",
+  "A palavra é metade de quem fala e metade de quem ouve. - Montaigne",
+  "A meditação é o olho da alma. - Sêneca",
+  "Enquanto ensinamos, aprendemos. - Sêneca",
+  "O sol brilha para todos. - Provérbio Japonês",
+    "A alma é tingida com a cor dos seus pensamentos. - Marco Aurélio",
+  "O que não é bom para a colmeia, não é bom para a abelha. - Marco Aurélio",
+  "A melhor vingança é ser diferente de quem causou o dano. - Marco Aurélio",
+  "Nada acontece ao homem que ele não possa suportar. - Marco Aurélio",
+  "A resposta branda desvia o furor. - Provérbio Bíblico",
+  "O coração alegre é bom remédio. - Provérbio Bíblico",
+  "A soberba precede a ruína. - Provérbio Bíblico",
+  "O que guarda a sua boca preserva a sua vida. - Provérbio Bíblico",
+  "Melhor é o fim das coisas do que o princípio delas. - Eclesiastes",
+  "A sabedoria fortalece o sábio. - Eclesiastes",
+  "Onde não há lei, não há liberdade. - John Locke",
+  "Apesar de tudo, acredito na bondade humana. - Anne Frank",
+  "Só o homem instruído é livre. - Epicteto",
+  "Se você quer ser amado, ame. - Sêneca",
+  "A vida começa onde a zona de conforto termina. - Neale Donald Walsch",
+  "O sucesso é passar de fracasso em fracasso sem desanimar. - Winston Churchill",
+  "Nunca, nunca, nunca desista. - Winston Churchill",
+  "O preço da grandeza é a responsabilidade. - Winston Churchill",
+  "Até a jornada de mil milhas começa com um passo. - Provérbio Japonês",
+  "O peixe que escapa é sempre o maior. - Provérbio Japonês",
+  "Dez homens, dez cores diferentes. - Provérbio Japonês",
+  "A união faz a força. - Esopo",
+  "A necessidade é a mãe da invenção. - Platão",
+  "Quem procura um amigo sem defeitos, fica sem amigos. - Provérbio Árabe",
+  "O homem é senhor do que cala e escravo do que fala. - Provérbio Árabe",
+  "A mão que dá é superior à que recebe. - Provérbio Árabe",
+  "A caridade é benigna e não busca seus interesses. - Paulo (Apóstolo)",
+  "Não te deixes vencer pelo mal. - Paulo (Apóstolo)",
+  "O homem que se cala quando deve falar é culpado. - Savonarola",
+  "A sombra é o que pensamos; a árvore é a coisa real. - Abraham Lincoln",
+  "Pode-se enganar alguns, mas não a todos o tempo todo. - Abraham Lincoln",
+  "O melhor modo de prever o futuro é criá-lo. - Abraham Lincoln",
+  "A raiva é um ácido que corrói o recipiente. - Mark Twain",
+  "Se o que tens a dizer não supera o silêncio, cala-te. - Provérbio Árabe",
+  "A paciência é a chave para a alegria. - Provérbio Árabe",
+  "Vencer a si próprio é a maior vitória. - Platão",
+  "A leitura fornece materiais para o conhecimento. - John Locke",
+  "Ninguém é livre se não for mestre de si mesmo. - Epicteto",
+  "Não espere que os eventos ocorram como você deseja. - Epicteto",
+  "A coragem é a resistência ao medo. - Mark Twain",
+  "Onde há o amor ao homem, há amor à arte médica. - Hipócrates",
+  "A vida é breve, a arte é longa. - Hipócrates",
+  "Quem olha para dentro acorda. - Carl Jung",
+  "Tudo o que nos irrita nos outros nos ensina sobre nós. - Carl Jung",
+  "A ciência sem religião é manca. - Albert Einstein",
+  "A imaginação é tudo. É a prévia das atrações da vida. - Albert Einstein",
+  "A paz não pode ser mantida à força. - Albert Einstein",
+  "Quem nunca cometeu um erro nunca tentou algo novo. - Albert Einstein",
+  "A criatividade é a inteligência se divertindo. - Albert Einstein",
+  "O único erro real é aquele com o qual não aprendemos. - Henry Ford",
+  "Não encontre defeitos, encontre soluções. - Henry Ford",
+  "Obstáculos são o que você vê quando tira os olhos do alvo. - Henry Ford",
+  "Pensar é o trabalho mais difícil que existe. - Henry Ford",
+  "A honra é a poesia do dever. - Alfred de Vigny",
+  "O que você faz fala tão alto que não ouço o que você diz. - Emerson",
+  "O medo é o pai da crueldade. - Sêneca",
+  "A felicidade não é um destino, é um modo de viajar. - Margaret Runbeck",
+  "Não é o que você olha que importa, mas o que você vê. - Thoreau",
+  "O segredo da saúde mental e corporal é não lamentar o passado. - Sêneca",
+  "Toda reforma interior e toda mudança começam por um esforço. - Sêneca",
+  "O tempo é o melhor conselheiro. - Péricles",
+  "A amizade duplica as alegrias e divide as angústias. - Francis Bacon",
+  "Quem não sabe ser feliz com pouco, não será com muito. - Sêneca",
+  "O destino não é uma questão de sorte, é uma questão de escolha. - William Jennings Bryan",
+  "Não espere por circunstâncias ideais, crie-as. - George Bernard Shaw",
+  "O entusiasmo é a maior força da alma. - Christian Dior",
+  "A mente que se abre a uma nova ideia jamais voltará ao seu tamanho original. - Einstein",
+  "Nada é tão contagioso quanto o exemplo. - La Rochefoucauld",
+  "O fracasso é o tempero que dá sabor ao sucesso. - Truman Capote",
+  "Grandes mentes discutem ideias; mentes médias discutem eventos; mentes pequenas discutem pessoas. - Eleanor Roosevelt",
+  "A coragem não é a ausência do medo, mas o julgamento de que algo é mais importante que o medo. - Ambrose Redmoon",
+  "A disciplina é a ponte entre metas e realizações. - Jim Rohn",
+  "Tire proveito de cada erro e você será um mestre. - Provérbio Chinês",
+  "Onde o trabalho é prazer, a vida é alegria. - Maxim Gorky",
+  "A verdadeira grandeza consiste em ser senhor de si mesmo. - Sêneca",
+  "Ninguém tropeça sentado. - Provérbio Japonês",
+  "A vida não é medida pelo número de respirações, mas pelos momentos que nos tiram o fôlego. - Maya Angelou",
+  "O homem que não lê não tem vantagem sobre o homem que não sabe ler. - Mark Twain",
+  "O otimismo é a fé que leva à realização. - Helen Keller",
+  "A paciência é amarga, mas seu fruto é doce. - Jean-Jacques Rousseau",
+  "Para ser feliz, devemos ser mestres de nossa própria mente. - Sêneca",
+  "O que temos atrás de nós e o que temos diante de nós são coisas minúsculas comparadas ao que temos dentro de nós. - Emerson",
+  "O sucesso não é a chave para a felicidade. A felicidade é a chave para o sucesso. - Albert Schweitzer",
+  "Onde quer que você esteja, esteja lá por inteiro. - Jim Elliot",
+  "A simplicidade é a chave da verdadeira elegância. - Coco Chanel",
+  "Tudo o que você sempre quis está do outro lado do medo. - George Addair",
+  "Se você quer ir rápido, vá sozinho. Se você quer ir longe, vá acompanhado. - Provérbio Africano",
+  "A melhor maneira de começar é parar de falar e começar a fazer. - Walt Disney",
+  "A vida é 10% o que acontece conosco e 90% como reagimos a isso. - Charles Swindoll",
+  "Acredite que você pode e você já está no meio do caminho. - Theodore Roosevelt",
+  "O único limite para a nossa realização de amanhã serão as nossas dúvidas de hoje. - Franklin D. Roosevelt",
+  "O caráter é o que você faz quando ninguém está olhando. - Dwight L. Moody",
+  "A oportunidade muitas vezes vem disfarçada de azar ou derrota temporária. - Napoleon Hill",
+  "Não deixe o barulho da opinião dos outros abafar a sua voz interior. - Steve Jobs",
+  "Sua tarefa é descobrir o seu trabalho e, então, com todo o coração, dedicar-se a ele. - Buda",
+  "O conhecimento fala, mas a sabedoria escuta. - Jimi Hendrix",
+  "A maior aventura que você pode ter é viver a vida dos seus sonhos. - Oprah Winfrey",
+  "A felicidade é quando o que você pensa, o que você diz e o que você faz estão em harmonia. - Gandhi",
+  "O amor é a única força capaz de transformar um inimigo em amigo. - Martin Luther King Jr.",
+  "A escuridão não pode expulsar a escuridão; apenas a luz pode fazer isso. - Martin Luther King Jr.",
+  "O perdão é um presente que você dá a si mesmo. - Suzanne Somers",
+  "O sucesso é a soma de pequenos esforços repetidos dia após dia. - Robert Collier",
+  "Se você não pode fazer grandes coisas, faça pequenas coisas de uma maneira excelente. - Napoleon Hill",
+  "A única maneira de fazer um excelente trabalho é amar o que você faz. - Steve Jobs",
+  "A vida é o que acontece enquanto você está ocupado fazendo outros planos. - John Lennon",
+  "O tempo é limitado, por isso não o gaste vivendo a vida de outra pessoa. - Steve Jobs",
+  "Mantenha o seu rosto sempre em direção ao sol, e as sombras cairão atrás de você. - Walt Whitman",
+  "Não é a carga que o quebra, mas a maneira como você a carrega. - Lou Holtz",
+  "O que não começamos hoje nunca termina amanhã. - Goethe",
+  "A maior glória em viver não reside em nunca cair, mas em nos levantarmos cada vez que caímos. - Nelson Mandela",
+  "Onde não há luta, não há força. - Oprah Winfrey",
+  "O sonho é o roteiro que a nossa alma escreve para o nosso destino. - Anônimo",
+  "A gratidão transforma o que temos em suficiente. - Anônimo",
+  "Não conte os seus problemas, conte as suas bênçãos. - Provérbio Popular",
+  "A mente é tudo. O que você pensa, você se torna. - Buda",
+  "O segredo da liberdade é a coragem. - Péricles",
+  "A sabedoria é a parte suprema da felicidade. - Sófocles",
+  "Nada de grande no mundo foi realizado sem paixão. - Hegel",
+  "A vida é uma jornada, não um destino. - Emerson",
+  "A excelência não é um ato, mas um hábito. - Aristóteles",
+  "O ignorante afirma, o sábio duvida, o sensato reflete. - Aristóteles",
+  "A amizade é uma alma que habita em dois corpos. - Aristóteles",
+  "A base de toda sociedade é a educação de seus jovens. - Aristóteles",
+  "As raízes da educação são amargas, mas o fruto é doce. - Aristóteles",
+  "A coragem é a primeira das qualidades humanas porque é a qualidade que garante as outras. - Winston Churchill",
+  "O sucesso não é final, o fracasso não é fatal: é a coragem de continuar que conta. - Winston Churchill",
+  "Melhor lutar por algo do que viver por nada. - Winston Churchill",
+  "Se você está atravessando o inferno, continue indo. - Winston Churchill",
+  "A política é a arte do possível. - Otto von Bismarck",
+  "A liberdade sem ordem é o caos. - Anônimo",
+  "O homem é um animal político. - Aristóteles",
+  "A verdade vos libertará. - João 8:32",
+  "Amai-vos uns aos outros como eu vos amei. - Jesus Cristo",
+  "Bem-aventurados os pacíficos. - Mateus 5:9",
+  "Não julgueis para não serdes julgados. - Mateus 7:1",
+  "Peçam e lhes será dado; busquem e encontrarão. - Mateus 7:7",
+  "A boca fala do que está cheio o coração. - Mateus 12:34",
+  "O amor é paciente, o amor é bondoso. - 1 Coríntios 13:4",
+  "Agora, pois, permanecem a fé, a esperança e o amor. - 1 Coríntios 13:13",
+  "Tudo posso naquele que me fortalece. - Filipenses 4:13",
+  "A fé é a certeza daquilo que esperamos. - Hebreus 11:1",
+  "Não andeis ansiosos por coisa alguma. - Filipenses 4:6",
+  "Sede fortes e corajosos. - Josué 1:9",
+  "O Senhor é o meu pastor, nada me faltará. - Salmos 23:1",
+  "Ainda que eu andasse pelo vale da sombra da morte, não temeria mal algum. - Salmos 23:4",
+  "Lâmpada para os meus pés é a tua palavra. - Salmos 119:105",
+  "O temor do Senhor é o princípio da sabedoria. - Provérbios 1:7",
+  "Filho meu, guarda o teu coração. - Provérbios 4:23",
+  "A resposta calma desvia a fúria. - Provérbios 15:1",
+  "O coração alegre aformoseia o rosto. - Provérbios 15:13",
+  "O ferro com o ferro se afia. - Provérbios 27:17",
+  "Como o homem pensa em sua alma, assim ele é. - Provérbios 23:7",
+  "Para tudo há uma ocasião certa. - Eclesiastes 3:1",
+  "A sabedoria é melhor que a força. - Eclesiastes 9:16",
+  "O que é torto não se pode endireitar. - Eclesiastes 1:15",
+  "Melhor é a sabedoria do que as joias preciosas. - Provérbios 8:11",
+  "A soberba do homem o abaterá. - Provérbios 29:23",
+  "Onde não há conselho os projetos saem vãos. - Provérbios 15:22",
+  "A paciência vale mais que a força. - Provérbios 16:32",
+  "O espírito do homem o sustenta na doença. - Provérbios 18:14",
+  "O que adquire entendimento ama a sua alma. - Provérbios 19:8",
+  "A glória dos jovens é a sua força. - Provérbios 20:29",
+  "O prudente vê o mal e esconde-se. - Provérbios 22:3",
+  "Não te fatigues para seres rico. - Provérbios 23:4",
+  "Como a cidade derrubada é o homem que não pode conter o seu espírito. - Provérbios 25:28",
+  "Fiel é a ferida feita pelo que ama. - Provérbios 27:6",
+  "O que confia no seu próprio coração é tolo. - Provérbios 28:26",
+  "O homem que caminha na integridade caminha seguro. - Provérbios 10:9",
+  "A memória do justo é abençoada. - Provérbios 10:7",
+  "Na multidão de palavras não falta pecado. - Provérbios 10:19",
+  "A bênção do Senhor é que enriquece. - Provérbios 10:22",
+  "A esperança dos justos é alegria. - Provérbios 10:28",
+  "Vindo a soberba, virá também a afronta. - Provérbios 11:2",
+  "O que despreza o seu próximo carece de entendimento. - Provérbios 11:12",
+  "O que espalha liberalmente ainda sobra mais. - Provérbios 11:24",
+  "A alma generosa prosperará. - Provérbios 11:25",
+  "O que confia nas suas riquezas cairá. - Provérbios 11:28",
+  "O que ama a instrução ama o conhecimento. - Provérbios 12:1",
+  "O caminho do insensato é reto aos seus próprios olhos. - Provérbios 12:15",
+  "A ansiedade no coração deixa o homem abatido. - Provérbios 12:25",
+  "O que guarda a sua boca guarda a sua alma. - Provérbios 13:3",
+  "A esperança adiada adoece o coração. - Provérbios 13:12",
+  "O que anda com os sábios ficará sábio. - Provérbios 13:20",
+  "O que poupa a sua vara odeia a seu filho. - Provérbios 13:24",
+  "O sábio teme e desvia-se do mal. - Provérbios 14:16",
+  "O coração conhece a sua própria amargura. - Provérbios 14:10",
+  "Na muita fadiga há proveito. - Provérbios 14:23",
+  "A ira é cruel e o furor impetuoso. - Provérbios 27:4",
+  "Melhor é a repreensão aberta do que o amor encoberto. - Provérbios 27:5",
+  "O homem que se desvia do caminho do entendimento repousará na congregação dos mortos. - Provérbios 21:16",
+  "O que segue a justiça e a benevolência achará a vida. - Provérbios 21:21",
+  "O cavalo prepara-se para o dia da batalha, mas do Senhor vem a vitória. - Provérbios 21:31",
+  "Vale mais o bom nome do que as muitas riquezas. - Provérbios 22:1",
+  "Instrui a criança no caminho em que deve andar. - Provérbios 22:6",
+  "O que semeia a injustiça colherá males. - Provérbios 22:8",
+  "Não removas os limites antigos. - Provérbios 22:28",
+  "Não comas o pão daquele que tem os olhos invejosos. - Provérbios 23:6",
+  "Compra a verdade e não a vendas. - Provérbios 23:23",
+  "Com sabedoria se edifica a casa. - Provérbios 24:3",
+  "Se te mostrares frouxo no dia da angústia, a tua força será pequena. - Provérbios 24:10",
+  "Não te alegres quando cair o teu inimigo. - Provérbios 24:17",
+  "A palavra dita a seu tempo é como maçãs de ouro. - Provérbios 25:11",
+  "Como o frio da neve no tempo da sega, assim é o mensageiro fiel. - Provérbios 25:13",
+  "O que não tem domínio próprio é como uma cidade sem muros. - Provérbios 25:28",
+  "Não te glories do dia de amanhã. - Provérbios 27:1",
+  "O que confessa e deixa suas transgressões alcançará misericórdia. - Provérbios 28:13",
+  "O que dá ao pobre não terá necessidade. - Provérbios 28:27",
+  "Sem profecia, o povo se corrompe. - Provérbios 29:18",
+  "O homem que lisonjeia o seu próximo arma-lhe uma rede. - Provérbios 29:5",
+  "A vara e a repreensão dão sabedoria. - Provérbios 29:15",
+  "O medo do homem arma laços. - Provérbios 29:25",
+  "Quem é você para julgar o servo alheio? - Romanos 14:4",
+  "O Reino de Deus não é comida nem bebida, mas justiça e paz. - Romanos 14:17",
+  "Não se deixem enganar: as más companhias corrompem os bons costumes. - 1 Coríntios 15:33",
+  "Fiquem alertas, permaneçam firmes na fé, sejam corajosos, sejam fortes. - 1 Coríntios 16:13",
+  "Que tudo o que vocês fizerem seja feito com amor. - 1 Coríntios 16:14",
+  "Não nos cansemos de fazer o bem. - Gálatas 6:9",
+  "Sejam bondosos e compassivos uns para com os outros. - Efésios 4:32",
+  "Vivam como filhos da luz. - Efésios 5:8",
+  "Aproveitem bem cada oportunidade. - Efésios 5:16",
+  "Tudo o que fizerem, façam de todo o coração. - Colossenses 3:23",
+  "Sejam sábios no procedimento para com os de fora. - Colossenses 4:5",
+  "Esforcem-se para viver em paz com todos. - Hebreus 12:14",
+  "Sejam praticantes da palavra, e não apenas ouvintes. - Tiago 1:22",
+  "Onde há inveja e ambição egoísta, há confusão. - Tiago 3:16",
+  "Acima de tudo, amem-se sinceramente uns aos outros. - 1 Pedro 4:8",
+  "Lancem sobre ele toda a sua ansiedade, porque ele tem cuidado de vocês. - 1 Pedro 5:7",
+  "Aquele que não ama não conhece a Deus. - 1 João 4:8",
+  "Não amemos de palavra, mas de fato e de verdade. - 1 João 3:18",
+  "O amor lança fora todo o medo. - 1 João 4:18",
+  "Pois o exercício físico tem algum valor, mas a piedade tem valor para tudo. - 1 Timóteo 4:8",
+  "Pois Deus não nos deu espírito de covardia, mas de poder e amor. - 2 Timóteo 1:7",
+  "O que você ouviu de mim, transmita a pessoas dignas de confiança. - 2 Timóteo 2:2",
+  "Fuja dos desejos malignos da juventude. - 2 Timóteo 2:22",
+  "Saiba que nos últimos dias sobrevirão tempos terríveis. - 2 Timóteo 3:1",
+  "Prega a palavra, insiste a tempo e fora de tempo. - 2 Timóteo 4:2",
+  "Quanto a você, seja equilibrado em tudo. - 2 Timóteo 4:5",
+  "Para os puros, todas as coisas são puras. - Tito 1:15",
+  "Evite perguntas tolas e genealogias. - Tito 3:9",
+  "O homem que segue a justiça achará a vida. - Provérbios 21:21",
+  "A humildade precede a honra. - Provérbios 15:33",
+  "A sabedoria habita com a prudência. - Provérbios 8:12",
+  "O espírito paciente é melhor que o orgulhoso. - Eclesiastes 7:8",
+  "Não se apresse em seu espírito a irar-se. - Eclesiastes 7:9",
+  "A sabedoria dá vida a quem a possui. - Eclesiastes 7:12",
+  "Deus fez o homem reto, mas ele buscou muitas invenções. - Eclesiastes 7:29",
+  "Onde está a palavra do rei, ali há poder. - Eclesiastes 8:4",
+  "Quem guarda o mandamento não experimentará nenhum mal. - Eclesiastes 8:5",
+  "Pois para todo propósito há tempo e modo. - Eclesiastes 8:6",
+  "O que trabalha a terra fartar-se-á de pão. - Provérbios 12:11",
+  "A língua dos sábios é saúde. - Provérbios 12:18",
+  "O desejo que se cumpre é doce para a alma. - Provérbios 13:19",
+  "O coração do entendido busca o conhecimento. - Provérbios 15:14",
+  "A sabedoria é o alvo de quem tem entendimento. - Provérbios 17:24",
+  "O espírito firme sustenta o homem na dor. - Provérbios 18:14",
+  "Quem adquire sabedoria ama a si mesmo. - Provérbios 19:8",
+  "O conselho no coração é como águas profundas. - Provérbios 20:5",
+  "A alma generosa prosperará. - Provérbios 11:25",
+  "O que confia no Senhor será prosperado. - Provérbios 28:25",
+  "O fim de todas as coisas está próximo; sede equilibrados. - 1 Pedro 4:7"
+];
+
+function irPara(id) {
+  ['plano-recepcao','plano-autoavaliacao','plano-resultado','plano-conteudo','plano-crises'].forEach(p => {
+    document.getElementById(p).style.display='none';
+  });
+  document.getElementById(id).style.display='block';
+}
+
+function mostrarConselho() {
+  const d = document.getElementById('cx-conselho');
+  const r = Math.floor(Math.random() * frasesConselho.length);
+  d.style.display = 'block';
+  d.innerHTML = `<strong>Conselho do Dia:</strong><br>${frasesConselho[r]}`;
+}
+
+function msg(c) {
+  const d = document.getElementById('cx-suporte');
+  d.style.display = 'block';
+  d.innerHTML = `<strong>Orientação Clínica:</strong><br>${suporte[c].t}<br><span class="texto-biblico">"${suporte[c].v}"<br>(${suporte[c].b})</span>`;
+}
+
+function init() {
+  const qs = ["Q1 – Org. Ambiente", "Q2 – Agenda", "Q3 – Problemas", "Q4 – Pausa", "Q5 – Ansiedade", "Q6 – Paz Interna", "Q .7- Perdão", "Q8 – Humor"];
+  const container = document.getElementById('questoes');
+  qs.forEach(q => {
+    container.innerHTML += `<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;align-items:center;"><span>${q}:</span><input type="number" class="nota" min="0" max="10" maxlength="2" placeholder="0" oninput="if(value.length > 2) value = value.slice(0, 2); if(value > 10) value = 10; if(value < 0) value = 0;"></div>`;
+  });
+}
+
+function verResultado() {
+  let s = 0; 
+  const ns = document.querySelectorAll('.nota');
+  for(let n of ns) { 
+    let v = parseFloat(n.value || 0);
+    if(v > 10) v = 10;
+    s += v; 
+  }
+  const sc = Math.round(s * 12.5);
+  irPara('plano-resultado');
+  document.getElementById('v-sc').innerText = sc;
+  document.getElementById('v-mc').innerText = (sc/100).toFixed(1);
+  const ang = -180 + (sc/1000 * 180);
+  setTimeout(() => { document.getElementById('ptr-vivo').style.transform = `rotate(${ang}deg)`; }, 200);
+}
+
+init();
+</script>
+</body>
+</html>  <div class="topo">
     <div class="avatar"><img src="avatar.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"></div>
     <div style="flex:1"><h2>Terapeuta Digital</h2><small>Qualificação do Estar</small></div>
   </div>
