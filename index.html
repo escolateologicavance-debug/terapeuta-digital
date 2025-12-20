@@ -1,28 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-{
-  "name": "Terapeuta Digital - Método SINCRO",
-  "short_name": "Terapeuta",
-  "description": "Suporte Emocional e Qualificação do Estar - Gilberto Moreira",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#f8f9fa",
-  "theme_color": "#0b3c5d",
-  "icons": [
-    {
-      "src": "avatar.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "avatar.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg"
-    }
-  ]
-}
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json?v=6">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terapeuta Digital - Gilberto Moreira</title>
@@ -118,7 +97,7 @@ button { width: 100%; padding: 16px; font-size: 1.1em; font-weight: bold; border
 const suporte = {
   faltaFe: { t: "Equilíbrio em Meio à Crise: A instabilidade emocional é como um mar agitado. Retome a calma consciente para que a paz volte a reinar no seu Estar.", b: "Mateus 8:26", v: "E disse-lhes: Por que é pequena a vossa fé? E, levantando-se, repreendeu os ventos e o mar, e fez-se grande bonança." },
   indecisao: { t: "Ordem Mental: Entregue o controle ao propósito maior para encontrar o caminho correto quando a lógica limitada falhar.", b: "Provérbios 3:5", v: "Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento." },
-  paz: { t: "Qualificação da Mente: A paz é um estado que protege seus pensamentos acima de qualquer circunstância externa.", b: "Filipenses 4:7", v: "E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos em Cristo Jesus." },
+  paz: { t: "Qualificação da Mente: A paz é um estado que protege seus pensamentos acima de qualquer circunstância externa.", b: "Filipenses 4:7", v: "E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos in Cristo Jesus." },
   desilusao: { t: "Transformação do Estar: Frustrações cooperam para o seu crescimento sistêmico e amadurecimento.", b: "Romanos 8:28", v: "E sabemos que todas as coisas contribuem para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito." },
   proposito: { t: "Destino Assistido: Existem planos de paz desenhados para o seu Estar, visando um futuro de plena esperança.", b: "Jeremias 29:11", v: "Porque eu sei os pensamentos que tenho para convosco, diz o Senhor, pensamentos de paz, e não de mal, para vos dar o fim que desejais." },
   separacao: { t: "Reorganização Pessoal: Foque em restabelecer a ordem no seu Estar individual para um novo recomeço equilibrado.", b: "Gênesis 2:24", v: "E disse: Por isso o homem deixará o seu pai e a sua mãe, e se unirá à sua mulher, e serão uma só carne." },
@@ -171,131 +150,13 @@ function verResultado() {
   setTimeout(() => { document.getElementById('ptr-vivo').style.transform = `rotate(${ang}deg)`; }, 200);
 }
 
-init();
-// Registro do Service Worker para permitir a instalação como App
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js')
-    .then(() => console.log("SincroApp: Pronto para uso"))
-    .catch(err => console.log("Erro ao registrar:", err));
+    .then(() => console.log("SincroApp: Ativado"))
+    .catch(err => console.log("Erro sw:", err));
 }
+
+init();
 </script>
-</body>
-</html>}
-
-.subtitulo{
-    font-size:15px;
-    font-weight:600;
-    color:#7f8c8d;
-    letter-spacing:1px;
-}
-
-/* ===== MAIN ===== */
-main{
-    width:100%;
-    max-width:420px;
-}
-
-p{
-    font-size:18px;
-}
-
-/* ===== GAUGE ===== */
-.gauge-container{
-    position:relative;
-    width:300px;
-    height:150px;
-    margin:25px auto;
-    overflow:hidden;
-}
-
-.gauge-body{
-    width:300px;
-    height:300px;
-    border-radius:50%;
-    background:conic-gradient(
-        #ff4d4d 0deg 60deg,
-        #ffcc00 60deg 120deg,
-        #2ecc71 120deg 180deg
-    );
-    mask:radial-gradient(circle, transparent 65%, black 66%);
-    -webkit-mask:radial-gradient(circle, transparent 65%, black 66%);
-    transform:rotate(-90deg);
-}
-
-.pointer{
-    position:absolute;
-    bottom:0;
-    left:50%;
-    width:5px;
-    height:125px;
-    background:#2c3e50;
-    border-radius:4px;
-    transform-origin:bottom center;
-    transform:translateX(-50%) rotate(0deg);
-    transition:transform 1.4s cubic-bezier(.17,.67,.83,.67);
-}
-
-/* ===== BUTTON ===== */
-.btn-calculadora{
-    background:#2c3e50;
-    color:#fff;
-    border:none;
-    padding:18px 38px;
-    font-size:17px;
-    font-weight:bold;
-    border-radius:14px;
-    cursor:pointer;
-    box-shadow:0 6px 18px rgba(0,0,0,.2);
-}
-
-/* ===== FOOTER ===== */
-footer{
-    margin-bottom:35px;
-}
-
-.frase-impacto{
-    font-size:18px;
-    font-weight:bold;
-}
-
-.assinatura{
-    font-size:15px;
-    opacity:.8;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-<img src="synchro.png" class="logo">
-    <h1>Terapeuta Digital</h1>
-    <div class="subtitulo">Desinstalação do Caos</div>
-</header>
-
-<main>
-    <p>Como está o seu nível emocional agora?</p>
-
-    <div class="gauge-container">
-        <div class="gauge-body"></div>
-        <div id="ponteiro" class="pointer"></div>
-    </div>
-
-    <p><strong>Deseja avaliar seu estado emocional agora?</strong></p>
-    <button class="btn-calculadora" onclick="move()">Simular Calculadora SC</button>
-</main>
-
-<footer>
-    <span class="frase-impacto">Gestão Emocional — sua melhor versão</span><br>
-    <span class="assinatura">Gilberto Moreira | CBO 2515-50</span>
-</footer>
-
-<script>
-function move(){
-    document.getElementById("ponteiro")
-        .style.transform="translateX(-50%) rotate(70deg)";
-}
-</script>
-
 </body>
 </html>
