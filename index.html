@@ -140,6 +140,112 @@ window.onload = init;
 </script>
 </body>
 </html>
+    <div id="plano-recepcao">
+        <div class="medidor-box"></div>
+        <p style="color:var(--laranja); font-weight:bold; font-size:1.3em; margin: 30px 0;">Como está o seu nível emocional agora?</p>
+        <button onclick="irPara('plano-autoavaliacao')">Simulador Emocional</button>
+    </div>
+
+    <div id="plano-autoavaliacao">
+        <h3 style="color:var(--verde)">Autoavaliação (0 a 10)</h3>
+        <div id="questoes"></div>
+        <button onclick="verResultado()" style="margin-top:20px">Ver Resultado</button>
+    </div>
+
+    <div id="plano-resultado">
+        <div class="medidor-box">
+            <div class="ponteiro-container"><div class="ponteiro" id="ptr-vivo"></div></div>
+        </div>
+        <div style="font-size:4.5em; color:#f1c40f; font-weight:bold; text-shadow:2px 2px 4px rgba(0,0,0,0.2)" id="v-sc">000</div>
+        <div style="font-weight:bold; color:#7f8c8d; margin-bottom:20px">Nota MC: <span id="v-mc">0.0</span></div>
+        <button onclick="irPara('plano-conteudo')">Acessar Conteúdo</button>
+    </div>
+
+    <div id="plano-conteudo">
+        <div class="menu-grid">
+            <button style="background:var(--laranja)" onclick="irPara('plano-crises')">Suporte Emocional</button>
+            <button style="background:var(--verde)" onclick="mostrarConselho()">Conselho do Dia</button>
+            <button style="background:var(--vermelho)" onclick="window.location.href='https://wa.me/5566999390073'">S.O.S / SINCRO</button>
+        </div>
+        <div id="cx-conselho" class="caixa-suporte"></div>
+        <button style="background:#95a5a6; margin-top:15px; font-size:0.9em; padding:10px" onclick="irPara('plano-resultado')">Voltar ao Score</button>
+    </div>
+
+    <div id="plano-crises">
+        <h3 style="color:var(--azul)">Selecione o Apoio:</h3>
+        <div class="menu-grid" style="max-height: 380px; overflow-y: auto; padding:5px;">
+            <button class="btn-crise" onclick="msg('ansiedade')">Ansiedade</button>
+            <button class="btn-crise" onclick="msg('paz')">Sem Paz</button>
+            <button class="btn-crise" onclick="msg('faltaFe')">Falta de Fé</button>
+            <button class="btn-crise" onclick="msg('desilusao')">Desilusão</button>
+            <button class="btn-crise" onclick="msg('magoa')">Mágoa</button>
+        </div>
+        <div id="cx-suporte" class="caixa-suporte"></div>
+        <button style="background:#95a5a6; margin-top:15px" onclick="irPara('plano-conteudo')">Voltar ao Menu</button>
+    </div>
+
+    <div class="rodape">
+        <span class="alerta-vermelho">Alerta: Não substitui psiquiatria.</span>
+        <b>Gilberto Moreira — Psicanalista</b><br>Método SINCRO - Itanhangá-MT
+    </div>
+</div>
+
+<script>
+const suporte = {
+    ansiedade: { t: "Foco no Presente: Qualifique seu Estar agora.", b: "Mateus 6.34", v: "Não vos inquieteis pelo dia de amanhã." },
+    paz: { t: "Paz que excede o entendimento.", b: "Filipenses 4:7", v: "A paz de Deus guardará vossos pensamentos." },
+    faltaFe: { t: "A fé traz a bonança.", b: "Mateus 8:26", v: "Por que tendes medo, homens de pequena fé?" },
+    desilusao: { t: "Tudo contribui para o bem.", b: "Romanos 8:28", v: "Todas as coisas cooperam para o bem." },
+    magoa: { t: "Pratique o bem e liberte-se.", b: "Efésios 4:27", v: "Não deis lugar ao diabo." }
+};
+
+const frasesConselho = ["Viver significa lutar. - Sêneca", "Onde há amor, há vida. - Gandhi", "Penso, logo existo. - Descartes"];
+
+function irPara(id) {
+    ['plano-recepcao','plano-autoavaliacao','plano-resultado','plano-conteudo','plano-crises'].forEach(p => {
+        document.getElementById(p).style.display='none';
+    });
+    document.getElementById(id).style.display='block';
+}
+
+function mostrarConselho() {
+    const d = document.getElementById('cx-conselho');
+    d.style.display = 'block';
+    d.innerHTML = `<strong>Conselho:</strong><br>${frasesConselho[Math.floor(Math.random()*frasesConselho.length)]}`;
+}
+
+function msg(c) {
+    const d = document.getElementById('cx-suporte');
+    d.style.display = 'block';
+    d.innerHTML = `<strong>Suporte:</strong><br>${suporte[c].t}<br><span class="texto-biblico">"${suporte[c].v}" (${suporte[c].b})</span>`;
+}
+
+function init() {
+    const qs = ["Organização","Agenda","Problemas","Reação","Ansiedade","Paz Interna","Estrutura","Humor"];
+    const c = document.getElementById('questoes');
+    if(c) {
+        c.innerHTML = "";
+        qs.forEach(q => {
+            c.innerHTML += `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;align-items:center;"><span>${q}</span><input type="number" class="nota" min="0" max="10" value="5"></div>`;
+        });
+    }
+}
+
+function verResultado() {
+    let s = 0;
+    document.querySelectorAll('.nota').forEach(n => s += parseFloat(n.value || 0));
+    const sc = Math.round(s * 12.5);
+    irPara('plano-resultado');
+    document.getElementById('v-sc').innerText = sc;
+    document.getElementById('v-mc').innerText = (sc/100).toFixed(1);
+    const ang = -180 + (sc/1000 * 180);
+    setTimeout(() => { document.getElementById('ptr-vivo').style.transform = `rotate(${ang}deg)`; }, 200);
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
   <div class="topo">
     <div class="avatar"><img src="avatar.jpg" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"></div>
     <div style="flex:1"><h2>Terapeuta Digital</h2><small>Qualificação do Estar</small></div>
