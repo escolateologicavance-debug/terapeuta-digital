@@ -1,24 +1,85 @@
-{
-  "name": "Terapeuta Digital - Método SINCRO",
-  "short_name": "Terapeuta",
-  "description": "Suporte Emocional e Qualificação do Estar",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#f8f9fa",
-  "theme_color": "#0b3c5d",
-  "icons": [
-    {
-      "src": "avatar.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "avatar.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Terapeuta Digital – Método SINCRO</title>
+
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Tema do app -->
+  <meta name="theme-color" content="#0b3c5d" />
+
+  <!-- Ícone fallback (importante para alguns Androids) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+  <!-- SEO básico -->
+  <meta name="description" content="Suporte emocional e qualificação do estar – Método SINCRO" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f8f9fa;
+      color: #0b3c5d;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
     }
-  ]
-}
+
+    .container {
+      max-width: 420px;
+      padding: 20px;
+    }
+
+    img.logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+      border-radius: 20px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Logo visível dentro do app -->
+    <img src="/icons/icon-192.png" alt="Terapeuta Digital" class="logo" />
+
+    <h1>Terapeuta Digital</h1>
+    <p>Método SINCRO<br />Suporte emocional e qualificação do estar</p>
+  </div>
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then(reg => {
+            console.log('Service Worker registrado:', reg.scope);
+          })
+          .catch(err => {
+            console.error('Erro ao registrar Service Worker:', err);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
