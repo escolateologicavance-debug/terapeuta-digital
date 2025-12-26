@@ -523,13 +523,13 @@ function verResultado() {
   setTimeout(() => { document.getElementById('ptr-vivo').style.transform = `rotate(${ang}deg)`; }, 200);
 }
 
+<script>
 window.onload = init;
-    if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./velho.js')
-      .then(reg => console.log('Service Worker registrado:', reg))
-      .catch(err => console.log('Erro no registro:', err));
-  });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => console.log('Service Worker registrado:', reg.scope))
+    .catch(err => console.error('Erro no Service Worker:', err));
 }
 </script>
 </body>
