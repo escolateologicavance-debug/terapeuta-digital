@@ -1,7 +1,7 @@
 {
   "name": "Terapeuta Digital - Método SINCRO",
   "short_name": "Terapeuta",
-  "description": "Suporte Emocional e Qualificação do Estar - Gilberto Moreira",
+  "description": "Suporte Emocional e Qualificação do Estar",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
