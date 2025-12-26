@@ -469,28 +469,36 @@ const frasesConselho = [
 
  
 <script>
-// 1. Definição das perguntas da calculadora
+// Lista de perguntas da calculadora
 const qs = ["Nível de estresse","Qualidade do sono","Foco mental","Motivação","Equilíbrio emocional","Esperança","Autocontrole","Bem-estar geral"];
 
-// 2. Funções de Navegação (Faz os botões trocarem de tela)
+// Faz as telas trocarem e gera as perguntas
 function irPara(id) {
-  document.querySelectorAll('#plano-recepcao,#plano-autoavaliacao,#plano-resultado,#plano-conteudo,#plano-crises').forEach(e => e.style.display = 'none');
+  document.querySelectorAll('#plano-recepcao,#plano-autoavaliacao,#plano-resultado,#plano-conteudo,#plano-crises').forEach(e => {
+    if(e) e.style.display = 'none';
+  });
   const alvo = document.getElementById(id);
-  if (alvo) alvo.style.display = 'block';
-  if (id === 'plano-autoavaliacao') gerarQuestoes();
+  if (alvo) {
+    alvo.style.display = 'block';
+    if (id === 'plano-autoavaliacao') gerarQuestoes();
+  }
 }
 
-// 3. Lógica da Calculadora (Gera as perguntas e calcula o resultado)
+// Constrói o simulador na tela
 function gerarQuestoes() {
   const container = document.getElementById('questoes');
   if (container) {
     container.innerHTML = "";
     qs.forEach(q => {
-      container.innerHTML += `<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;"><span>${q}</span><input type="number" class="nota" min="0" max="10" value="5"></div>`;
+      container.innerHTML += `<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;">
+        <span>${q}</span>
+        <input type="number" class="nota" min="0" max="10" value="5">
+      </div>`;
     });
   }
 }
 
+// Calcula o Score e move o ponteiro
 function verResultado() {
   const notas = document.querySelectorAll('.nota');
   let soma = 0;
@@ -498,10 +506,9 @@ function verResultado() {
   const media = (soma / qs.length).toFixed(1);
   const score = Math.round(media * 10); 
   
-  document.getElementById('v-mc').innerText = media;
-  document.getElementById('v-sc').innerText = score;
+  if(document.getElementById('v-mc')) document.getElementById('v-mc').innerText = media;
+  if(document.getElementById('v-sc')) document.getElementById('v-sc').innerText = score;
   
-  // Faz o ponteiro girar
   const angulo = -180 + (media * 18);
   const ponteiro = document.getElementById('ptr-vivo');
   if(ponteiro) ponteiro.style.transform = `rotate(${angulo}deg)`;
@@ -509,27 +516,13 @@ function verResultado() {
   irPara('plano-resultado');
 }
 
-// 4. Suporte Emocional e Conselhos
-function mostrarConselho() {
-  const d = document.getElementById('cx-conselho');
-  d.style.display = 'block';
-  d.innerHTML = "<strong>Conselho do Dia:</strong><br>Aquietai-vos e sabei que Eu Sou Deus. A Qualificação do Estar começa na confiança e na ordem.";
-}
-
-function msg(c) {
-  const d = document.getElementById('cx-suporte');
-  d.style.display = 'block';
-  // Aqui você pode expandir as mensagens depois
-  d.innerHTML = `<strong>Orientação Clínica:</strong><br>O Método SINCRO foca na sua Qualificação do Estar presente. Busque a paz que excede todo o entendimento.`;
-}
-
-// 5. Inicialização e Registro do App (PWA)
+// Inicia o App
 window.onload = () => irPara('plano-recepcao');
 
+// Registra o App (PWA)
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(err => console.log("Erro no App:", err));
+  navigator.serviceWorker.register('./sw.js');
 }
 </script>
- 
 </body>
 </html>
