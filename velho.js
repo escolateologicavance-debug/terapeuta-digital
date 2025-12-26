@@ -1,4 +1,4 @@
-const cacheName = 'terapeuta-sincro-v5';
+const cacheName = 'terapeuta-sincro-v6';
 const assets = [
   './',
   './index.html',
