@@ -1,36 +1,528 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
- <link rel="manifest" href="manifest.json">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terapeuta Digital - Gilberto Moreira</title>
-    <style>
-        :root { --fundo: #f8f9fa; --azul: #0b3c5d; --verde: #16a085; --laranja: #e67e22; --vermelho: #c0392b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--fundo); text-align: center; padding: 10px; margin: 0; }
-        .container { max-width: 450px; margin: 15px auto; background: #fff; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 750px; height: auto; display: flex; flex-direction: column; }
-        .topo { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; text-align: left; }
-        .avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--verde); overflow: hidden; background: #ddd; flex-shrink: 0; }
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .medidor-box { position: relative; width: 260px; height: 130px; margin: 20px auto; background: conic-gradient(from 270deg at 50% 100%, #e74c3c 0%, #f1c40f 45%, #2ecc71 100%); border-radius: 130px 130px 0 0; border: 5px solid #fff; }
-        .ponteiro-container { position: absolute; bottom: 0; left: 50%; width: 0; height: 0; }
-        .ponteiro { position: absolute; bottom: 0; left: 0; width: 100px; height: 4px; background: #333; transform-origin: left center; transform: rotate(-180deg); transition: transform 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); z-index: 10; border-radius: 4px; }
-        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
-        button { width: 100%; padding: 16px; font-size: 1.1em; font-weight: bold; border-radius: 15px; border: none; background: var(--azul); color: #fff; cursor: pointer; }
-        .btn-crise { background: #f8f9fa; color: var(--azul); border: 1px solid #ddd; text-align: left; padding-left: 15px; font-size: 0.95em; margin-bottom: 5px; }
-        .caixa-suporte { text-align: left; background: #fdfaf5; padding: 20px; border-radius: 15px; border-left: 6px solid var(--laranja); margin-top: 15px; display: none; line-height: 1.6; }
-        .texto-biblico { display: block; margin-top: 12px; font-weight: bold; color: var(--azul); border-top: 1px solid #eee; padding-top: 10px; font-style: italic; font-size: 0.9em; }
-        .rodape { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.75em; color: #7f8c8d; }
-        #plano-autoavaliacao, #plano-resultado, #plano-conteudo, #plano-crises { display: none; }
-        .nota { width: 65px; text-align: center; border-radius: 5px; border: 1px solid #ccc; padding: 8px; font-weight: bold; font-size: 1.1em; }
-    </style>
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terapeuta Digital - Gilberto Moreira</title>
+<style>
+:root { --fundo: #f8f9fa; --azul: #0b3c5d; --verde: #16a085; --laranja: #e67e22; --vermelho: #c0392b; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--fundo); text-align: center; padding: 10px; margin: 0; }
+.container { max-width: 450px; margin: 15px auto; background: #fff; padding: 25px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; min-height: 750px; height: auto; display: flex; flex-direction: column; }
+.topo { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; text-align: left; }
+.avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--verde); overflow: hidden; background: #ddd; flex-shrink: 0; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.medidor-box { position: relative; width: 260px; height: 130px; margin: 20px auto; background: conic-gradient(from 270deg at 50% 100%, #e74c3c 0%, #f1c40f 45%, #2ecc71 100%); border-radius: 130px 130px 0 0; border: 5px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.ponteiro-container { position: absolute; bottom: 0; left: 50%; width: 0; height: 0; }
+.ponteiro { position: absolute; bottom: 0; left: 0; width: 100px; height: 4px; background: #333; transform-origin: left center; transform: rotate(-180deg); transition: transform 2s cubic-bezier(0.17, 0.67, 0.83, 0.67); z-index: 10; border-radius: 4px; }
+.menu-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 15px; }
+button { width: 100%; padding: 16px; font-size: 1.1em; font-weight: bold; border-radius: 15px; border: none; background: var(--azul); color: #fff; cursor: pointer; }
+.btn-crise { background: #f8f9fa; color: var(--azul); border: 1px solid #ddd; text-align: left; padding-left: 15px; font-size: 0.95em; margin-bottom: 5px; }
+/* AJUSTE PARA O TEXTO NÃƒO CORTAR MAIS */
+.caixa-suporte { text-align: left; background: #fdfaf5; padding: 20px; border-radius: 15px; border-left: 6px solid var(--laranja); margin-top: 15px; display: none; line-height: 1.6; height: auto; min-height: 100px; }
+.texto-biblico { display: block; margin-top: 12px; font-weight: bold; color: var(--azul); border-top: 1px solid #eee; padding-top: 10px; font-style: italic; font-size: 0.9em; }
+.rodape { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.75em; color: #7f8c8d; }
+.alerta-vermelho { color: var(--vermelho); font-weight: bold; margin-bottom: 8px; display: block; }
+#plano-autoavaliacao, #plano-resultado, #plano-conteudo, #plano-crises { display: none; }
+/* TRAVA PARA O CAMPO DE NOTA */
+.nota { width: 50px; text-align: center; border-radius: 5px; border: 1px solid #ccc; padding: 5px; font-weight: bold; }
+</style>
 </head>
 <body>
+<script>
+// 1. Carrega o arquivo da calculadora
+const scriptCalculadora = document.createElement('script');
+scriptCalculadora.src = './calculadora-sc.js';
+document.head.appendChild(scriptCalculadora);
 
+// 2. Função que o seu botão chama para abrir o simulador
+function irPara(id) {
+  const planos = ['plano-recepcao', 'plano-autoavaliacao', 'plano-resultado', 'plano-conteudo', 'plano-crises'];
+  planos.forEach(p => {
+    const el = document.getElementById(p);
+    if(el) el.style.display = 'none';
+  });
+
+  const destino = document.getElementById(id);
+  if(destino) {
+      destino.style.display = 'block';
+      // ESTA LINHA ABAIXO É A QUE TRARÁ AS 8 PERGUNTAS:
+      if (id === 'plano-autoavaliacao') gerarQuestoes(); 
+  }
+}
+
+  const destino = document.getElementById(id);
+  if(destino) destino.style.display = 'block';
+
+  if (id === 'plano-autoavaliacao' && typeof iniciarCalculadora === "function") {
+    iniciarCalculadora();
+  }
+}
+
+// 3. Registro do Service Worker ATUALIZADO (sw.js)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js') // Mudei de velho.js para sw.js aqui
+    .then(() => console.log("Service Worker SINCRO Ativo"))
+    .catch(err => console.log("Erro no registro:", err));
+}
+
+// 4. Identificador de dispositivo
+(function () {
+  const KEY = "synkro_device_id";
+  if (!localStorage.getItem(KEY)) {
+    localStorage.setItem(KEY, Math.random().toString(36).substring(2));
+  }
+})();
+</script>
+
+
+<!-- daqui pra baixo vem TODO o seu app -->
 <div class="container">
-    <div class="topo">
-        <div class="avatar"><img src="avatar-512.png"></div>
+  <div class="topo">
+    <div class="avatar"><img src="avatar.png"></div>
+    <div style="flex:1"><h2>Terapeuta Digital</h2><small>QualificaÃ§Ã£o do Estar</small></div>
+  </div>
+  <div id="plano-recepcao"><div class="medidor-box"></div><p style="color:var(--laranja); font-weight:bold; font-size:1.3em; margin: 30px 0;">Como estÃ¡ o seu nÃ­vel emocional agora?</p><button onclick="irPara('plano-autoavaliacao')">Simulador Emocional</button></div>
+  <div id="plano-autoavaliacao"><h3 style="color:var(--verde)">AutoavaliaÃ§Ã£o (0 a 10)</h3><div id="questoes"></div><button onclick="verResultado()" style="margin-top:20px">Ver Resultado</button></div>
+  <div id="plano-resultado"><div class="medidor-box"><div class="ponteiro-container"><div class="ponteiro" id="ptr-vivo"></div></div></div><div style="font-size:4.5em; color:#f1c40f; font-weight:bold; text-shadow:2px 2px 4px rgba(0,0,0,0.2)" id="v-sc">000</div><div style="font-weight:bold; color:#7f8c8d; margin-bottom:20px">Nota MC: <span id="v-mc">0.0</span></div><button onclick="irPara('plano-conteudo')">Acessar ConteÃºdo</button></div>
+  <div id="plano-conteudo"><div class="menu-grid"><button style="background:var(--laranja)" onclick="irPara('plano-crises')">Suporte Emocional</button><button style="background:var(--verde)" onclick="mostrarConselho()">Conselho do Dia</button><button style="background:var(--vermelho)" onclick="window.location.href='https://wa.me/5566999390073'">S.O.S / SINCRO</button></div><div id="cx-conselho" class="caixa-suporte"></div><button style="background:#95a5a6; margin-top:15px; font-size:0.9em; padding:10px" onclick="irPara('plano-resultado')">Voltar ao Score</button></div>
+  <div id="plano-crises"><h3 style="color:var(--azul)">Selecione o Apoio:</h3><div class="menu-grid" style="max-height: 400px; overflow-y: auto; padding:5px;"><button class="btn-crise" onclick="msg('faltaFe')">Falta de FÃ©</button><button class="btn-crise" onclick="msg('indecisao')">IndecisÃ£o</button><button class="btn-crise" onclick="msg('paz')">Sem Paz</button><button class="btn-crise" onclick="msg('desilusao')">DesilusÃ£o</button><button class="btn-crise" onclick="msg('proposito')">Sem PropÃ³sitos</button><button class="btn-crise" onclick="msg('separacao')">SeparaÃ§Ã£o Conjugal</button><button class="btn-crise" onclick="msg('ansiedade')">Ansiedade</button><button class="btn-crise" onclick="msg('luto')">Luto</button><button class="btn-crise" onclick="msg('aborto')">Aborto</button><button class="btn-crise" onclick="msg('magoa')">MÃ¡goa</button></div><div id="cx-suporte" class="caixa-suporte"></div><button style="background:#95a5a6; margin-top:15px" onclick="irPara('plano-conteudo')">Voltar ao Menu</button></div>
+  <div class="rodape"><span class="alerta-vermelho">Alerta: NÃ£o substitui psiquiatria. NÃ£o suspenda remÃ©dios.</span><b>Gilberto Moreira â€” Psicanalista | CBO 2515-50</b><br>MÃ©todo SINCRO - ItanhangÃ¡-MT</div>
+</div>
+<script>
+const suporte = {
+  faltaFe: { t: "EquilÃ­brio em Meio Ã  Crise: A instabilidade emocional Ã© como um mar agitado. Retome a calma consciente para que a paz volte a reinar no seu Estar.", b: "Mateus 8:26", v: "E disse-lhes: Por que Ã© pequena a vossa fÃ©? E, levantando-se, repreendeu os ventos e o mar, e fez-se grande bonanÃ§a." },
+  indecisao: { t: "Ordem Mental: Entregue o controle ao propÃ³sito maior para encontrar o caminho correto quando a lÃ³gica limitada falhar.", b: "ProvÃ©rbios 3:5", v: "Confia no Senhor de todo o teu coraÃ§Ã£o, e nÃ£o te estribes no teu prÃ³prio entendimento." },
+  paz: { t: "QualificaÃ§Ã£o da Mente: A paz Ã© um estado que protege seus pensamentos acima de qualquer circunstÃ¢ncia externa.", b: "Filipenses 4:7", v: "E a paz de Deus, que excede todo o entendimento, guardarÃ¡ os vossos coraÃ§Ãµes e os vossos pensamentos em Cristo Jesus." },
+  desilusao: { t: "TransformaÃ§Ã£o do Estar: FrustraÃ§Ãµes cooperam para o seu crescimento sistÃªmico e amadurecimento.", b: "Romanos 8:28", v: "E sabemos que todas as coisas contribuem para o bem daqueles que amam a Deus, daqueles que sÃ£o chamados segundo o seu propÃ³sito." },
+  proposito: { t: "Destino Assistido: Existem planos de paz desenhados para o seu Estar, visando um futuro de plena esperanÃ§a.", b: "Jeremias 29:11", v: "Porque eu sei os pensamentos que tenho para convosco, diz o Senhor, pensamentos de paz, e nÃ£o de mal, para vos dar o fim que desejais." },
+  separacao: { t: "ReorganizaÃ§Ã£o Pessoal: Foque em restabelecer a ordem no seu Estar individual para um novo recomeÃ§o equilibrado.", b: "GÃªnesis 2:24", v: "E disse: Por isso o homem deixarÃ¡ o seu pai e a sua mÃ£e, e se unirÃ¡ Ã  sua mulher, e serÃ£o uma sÃ³ carne." },
+  ansiedade: { t: "Foco no Presente: Qualifique seu Estar agora, lidando apenas com as demandas reais do dia de hoje.", b: "Mateus 6.34", v: "NÃ£o vos inquieteis, pois, pelo dia de amanhÃ£, porque o dia de amanhÃ£ cuidarÃ¡ de si mesmo. Basta a cada dia o seu mal." },
+  luto: { t: "Apoio SincroclÃ­nico: Permita-se o acolhimento para que seu Estar encontre o consolo necessÃ¡rio para prosseguir.", b: "Salmos 34:1, 4", v: "O Senhor estÃ¡ perto dos que tÃªm o coraÃ§Ã£o quebrantado e salva os de espÃ­rito abatido." },
+  aborto: { t: "Amparo na Perda: Encontre conforto na verdade de que toda vida Ã© conhecida e protegida pelo Criador desde o inÃ­cio.", b: "Jeremias 1:5", v: "Antes que te formasse no ventre, te conheci; e, antes que saÃ­sses da madre, te santifiquei." },
+  magoa: { t: "LiberaÃ§Ã£o de Cargas: Substitua o foco na ofensa pela utilidade e pela prÃ¡tica do bem para restaurar sua paz.", b: "Efesios 4:27-28", v: "E nÃ£o deis lugar ao diabo... antes trabalhe, fazendo com as mÃ£os o que Ã© bom." }
+};
+
+const frasesConselho = [
+  "A educaÃ§Ã£o Ã© a arma mais poderosa. - Nelson Mandela",
+  "Seja a mudanÃ§a que vocÃª deseja ver. - Mahatma Gandhi",
+  "No fim, o que conta Ã© a vida nos seus anos. - Abraham Lincoln",
+  "A imaginaÃ§Ã£o Ã© mais importante que o conhecimento. - Albert Einstein",
+  "O que nÃ£o nos mata, nos fortalece. - Friedrich Nietzsche",
+  "Nossa glÃ³ria Ã© levantar a cada queda. - ConfÃºcio",
+  "A Ãºnica coisa a temer Ã© o prÃ³prio medo. - Roosevelt",
+  "Penso, logo existo. - RenÃ© Descartes",
+  "O sucesso Ã© manter o entusiasmo. - Winston Churchill",
+  "A felicidade vem das suas aÃ§Ãµes. - Dalai Lama",
+  "Conhece-te a ti mesmo. - SÃ³crates",
+  "O sÃ¡bio duvida, o sensato reflete. - AristÃ³teles",
+  "Felicidade Ã© a repetiÃ§Ã£o do prazer. - Schopenhauer",
+  "PaciÃªncia evita grandes desastres. - ProvÃ©rbio ChinÃªs",
+  "Remover montanhas comeÃ§a com pedras pequenas. - ConfÃºcio",
+  "A paciÃªncia Ã© a chave do alÃ­vio. - ProvÃ©rbio Ãrabe",
+  "Quem nÃ£o entende o silÃªncio, nÃ£o entende palavras. - Hubbard",
+  "O que o homem semear, isso colherÃ¡. - Paulo (ApÃ³stolo)",
+  "Tudo me Ã© lÃ­cito, nem tudo convÃ©m. - Paulo (ApÃ³stolo)",
+  "Combati o bom combate, guardei a fÃ©. - Paulo (ApÃ³stolo)",
+  "A vida depende dos seus pensamentos. - Marco AurÃ©lio",
+  "Viver significa lutar. - SÃªneca",
+  "Onde hÃ¡ um humano, hÃ¡ chance para bondade. - SÃªneca",
+    "A sorte Ã© o que acontece quando a preparaÃ§Ã£o encontra a oportunidade. - SÃªneca",
+  "Nenhum vento sopra a favor de quem nÃ£o sabe para onde vai. - SÃªneca",
+  "A vida, se bem empregada, Ã© suficientemente longa. - SÃªneca",
+  "Muitas vezes sofremos mais na imaginaÃ§Ã£o do que na realidade. - SÃªneca",
+  "O homem que sofre antes de ser necessÃ¡rio, sofre mais do que o necessÃ¡rio. - SÃªneca",
+  "Enquanto adiamos, a vida passa. - SÃªneca",
+  "A adversidade Ã© a ocasiÃ£o da virtude. - SÃªneca",
+  "Um mar calmo nunca fez um marinheiro habilidoso. - ProvÃ©rbio InglÃªs",
+  "O bambu que se curva Ã© mais forte que o carvalho que resiste. - ProvÃ©rbio JaponÃªs",
+  "RÃ¡pido Ã© devagar, mas sem interrupÃ§Ãµes. - ProvÃ©rbio JaponÃªs",
+  "O silÃªncio Ã© o ouro e a palavra Ã© a prata. - ProvÃ©rbio Ãrabe",
+  "Confia em Deus, mas amarra o teu camelo. - ProvÃ©rbio Ãrabe",
+  "O erro Ã© o portal da descoberta. - James Joyce",
+  "Sempre que estiver do lado da maioria, pare e reflita. - Mark Twain",
+  "As forÃ§as naturais dentro de nÃ³s sÃ£o os verdadeiros curadores. - HipÃ³crates",
+  "Quem tem um porquÃª para viver aguenta quase qualquer como. - Nietzsche",
+  "A vida sem mÃºsica seria um erro. - Nietzsche",
+  "NinguÃ©m pode fazer vocÃª se sentir inferior sem seu consentimento. - Eleanor Roosevelt",
+  "NÃ£o conte os dias, faÃ§a os dias contarem. - Muhammad Ali",
+  "O impossÃ­vel Ã© apenas uma palavra lanÃ§ada por homens pequenos. - Muhammad Ali",
+  "As mÃ£os que ajudam sÃ£o mais sagradas que os lÃ¡bios que rezam. - Gandhi",
+  "A forÃ§a provÃ©m de uma vontade indomÃ¡vel. - Gandhi",
+  "O pensamento Ã© o ensaio da aÃ§Ã£o. - Sigmund Freud",
+  "Olhar para trÃ¡s Ã© o melhor modo de prever o futuro. - Abraham Lincoln",
+  "NÃ£o importa o quÃ£o devagar vocÃª vÃ¡, desde que nÃ£o pare. - ConfÃºcio",
+  "Onde hÃ¡ amor, hÃ¡ vida. - Mahatma Gandhi",
+  "AtÃ© vocÃª se tornar consciente, o inconsciente dirigirÃ¡ sua vida. - Carl Jung",
+  "Eu nÃ£o sou o que aconteceu comigo, sou o que escolhi me tornar. - Carl Jung",
+  "Sua visÃ£o se tornarÃ¡ clara quando olhar para o seu coraÃ§Ã£o. - Carl Jung",
+  "Vencer a si prÃ³prio Ã© a maior das vitÃ³rias. - PlatÃ£o",
+  "Onde nÃ£o hÃ¡ visÃ£o, o povo perece. - ProvÃ©rbio BÃ­blico",
+  "Um dia sem riso Ã© um dia desperdiÃ§ado. - Charles Chaplin",
+  "A simplicidade Ã© o Ãºltimo grau de sofisticaÃ§Ã£o. - Da Vinci",
+  "O aprendizado nunca esgota a mente. - Da Vinci",
+  "Eu nÃ£o falhei. Encontrei caminhos que nÃ£o funcionam. - Thomas Edison",
+  "Tudo parece impossÃ­vel atÃ© que seja feito. - Nelson Mandela",
+  "O silÃªncio Ã© um amigo que nunca trai. - ConfÃºcio",
+  "A inteligÃªncia Ã© a habilidade de se adaptar. - Stephen Hawking",
+  "A felicidade nÃ£o Ã© um ideal da razÃ£o, mas da imaginaÃ§Ã£o. - Kant",
+  "O homem nÃ£o Ã© nada alÃ©m do que faz de si mesmo. - Sartre",
+  "Mesmo a noite mais escura terminarÃ¡ e o sol nascerÃ¡. - Victor Hugo",
+  "O destino de um homem Ã© o seu carÃ¡ter. - HerÃ¡clito",
+  "Nada Ã© permanente, exceto a mudanÃ§a. - HerÃ¡clito",
+  "A criatividade Ã© a inteligÃªncia se divertindo. - Einstein",
+  "NÃ£o tente ser de sucesso, mas sim de valor. - Einstein",
+  "O ponto de partida de toda conquista Ã© o desejo. - Napoleon Hill",
+  "O coraÃ§Ã£o tem razÃµes que a prÃ³pria razÃ£o desconhece. - Pascal",
+  "O que sabemos Ã© uma gota, o que ignoramos Ã© um oceano. - Newton",
+  "A medida do amor Ã© amar sem medida. - Santo Agostinho",
+  "A esperanÃ§a tem duas filhas: a indignaÃ§Ã£o e a coragem. - Santo Agostinho",
+  "NÃ£o se pode voltar atrÃ¡s, mas pode-se recomeÃ§ar agora. - Chico Xavier",
+  "Se julgar as pessoas, nÃ£o terÃ¡ tempo para amÃ¡-las. - Madre Teresa",
+  "A coragem Ã© o domÃ­nio do medo, nÃ£o a ausÃªncia dele. - Mark Twain",
+  "Felicidade Ã© a certeza de que a vida nÃ£o passa inutilmente. - Ã‰rico VerÃ­ssimo",
+  "Ser inteiramente honesto consigo mesmo Ã© um bom exercÃ­cio. - Freud",
+  "Onde o amor impera, nÃ£o hÃ¡ vontade de poder. - Carl Jung",
+  "Ao tocar uma alma humana, seja apenas outra alma humana. - Carl Jung",
+  "O destino baralha as cartas, e nÃ³s jogamos. - Schopenhauer",
+  "A dÃºvida Ã© o princÃ­pio da sabedoria. - AristÃ³teles",
+  "A sabedoria comeÃ§a na reflexÃ£o. - SÃ³crates",
+  "Viver significa lutar. - SÃªneca",
+  "NÃ£o Ã© porque as coisas sÃ£o difÃ­ceis que nÃ£o ousamos. - SÃªneca",
+  "A jornada de mil milhas comeÃ§a com um passo. - Lao TsÃ©",
+  "Quem conhece a si mesmo Ã© iluminado. - Lao TsÃ©",
+  "Onde nÃ£o hÃ¡ obediÃªncia, nÃ£o hÃ¡ virtude. - Savonarola",
+  "A oraÃ§Ã£o Ã© o escudo das almas. - Savonarola",
+  "O carÃ¡ter Ã© como uma Ã¡rvore e a reputaÃ§Ã£o como sua sombra. - Lincoln",
+  "Melhor calar e parecer tolo do que falar e tirar a dÃºvida. - Lincoln",
+  "A paciÃªncia Ã© a chave para a alegria. - ProvÃ©rbio Ãrabe",
+  "Errar Ã© humano, perdoar Ã© divino. - Alexander Pope",
+  "A gratidÃ£o Ã© a memÃ³ria do coraÃ§Ã£o. - AntÃ­stenes",
+  "Para tudo hÃ¡ um tempo debaixo do cÃ©u. - Eclesiastes",
+  "A verdadeira liberdade Ã© o domÃ­nio sobre si mesmo. - Montaigne",
+  "A palavra Ã© metade de quem fala e metade de quem ouve. - Montaigne",
+  "A meditaÃ§Ã£o Ã© o olho da alma. - SÃªneca",
+  "Enquanto ensinamos, aprendemos. - SÃªneca",
+  "O sol brilha para todos. - ProvÃ©rbio JaponÃªs",
+    "A alma Ã© tingida com a cor dos seus pensamentos. - Marco AurÃ©lio",
+  "O que nÃ£o Ã© bom para a colmeia, nÃ£o Ã© bom para a abelha. - Marco AurÃ©lio",
+  "A melhor vinganÃ§a Ã© ser diferente de quem causou o dano. - Marco AurÃ©lio",
+  "Nada acontece ao homem que ele nÃ£o possa suportar. - Marco AurÃ©lio",
+  "A resposta branda desvia o furor. - ProvÃ©rbio BÃ­blico",
+  "O coraÃ§Ã£o alegre Ã© bom remÃ©dio. - ProvÃ©rbio BÃ­blico",
+  "A soberba precede a ruÃ­na. - ProvÃ©rbio BÃ­blico",
+  "O que guarda a sua boca preserva a sua vida. - ProvÃ©rbio BÃ­blico",
+  "Melhor Ã© o fim das coisas do que o princÃ­pio delas. - Eclesiastes",
+  "A sabedoria fortalece o sÃ¡bio. - Eclesiastes",
+  "Onde nÃ£o hÃ¡ lei, nÃ£o hÃ¡ liberdade. - John Locke",
+  "Apesar de tudo, acredito na bondade humana. - Anne Frank",
+  "SÃ³ o homem instruÃ­do Ã© livre. - Epicteto",
+  "Se vocÃª quer ser amado, ame. - SÃªneca",
+  "A vida comeÃ§a onde a zona de conforto termina. - Neale Donald Walsch",
+  "O sucesso Ã© passar de fracasso em fracasso sem desanimar. - Winston Churchill",
+  "Nunca, nunca, nunca desista. - Winston Churchill",
+  "O preÃ§o da grandeza Ã© a responsabilidade. - Winston Churchill",
+  "AtÃ© a jornada de mil milhas comeÃ§a com um passo. - ProvÃ©rbio JaponÃªs",
+  "O peixe que escapa Ã© sempre o maior. - ProvÃ©rbio JaponÃªs",
+  "Dez homens, dez cores diferentes. - ProvÃ©rbio JaponÃªs",
+  "A uniÃ£o faz a forÃ§a. - Esopo",
+  "A necessidade Ã© a mÃ£e da invenÃ§Ã£o. - PlatÃ£o",
+  "Quem procura um amigo sem defeitos, fica sem amigos. - ProvÃ©rbio Ãrabe",
+  "O homem Ã© senhor do que cala e escravo do que fala. - ProvÃ©rbio Ãrabe",
+  "A mÃ£o que dÃ¡ Ã© superior Ã  que recebe. - ProvÃ©rbio Ãrabe",
+  "A caridade Ã© benigna e nÃ£o busca seus interesses. - Paulo (ApÃ³stolo)",
+  "NÃ£o te deixes vencer pelo mal. - Paulo (ApÃ³stolo)",
+  "O homem que se cala quando deve falar Ã© culpado. - Savonarola",
+  "A sombra Ã© o que pensamos; a Ã¡rvore Ã© a coisa real. - Abraham Lincoln",
+  "Pode-se enganar alguns, mas nÃ£o a todos o tempo todo. - Abraham Lincoln",
+  "O melhor modo de prever o futuro Ã© criÃ¡-lo. - Abraham Lincoln",
+  "A raiva Ã© um Ã¡cido que corrÃ³i o recipiente. - Mark Twain",
+  "Se o que tens a dizer nÃ£o supera o silÃªncio, cala-te. - ProvÃ©rbio Ãrabe",
+  "A paciÃªncia Ã© a chave para a alegria. - ProvÃ©rbio Ãrabe",
+  "Vencer a si prÃ³prio Ã© a maior vitÃ³ria. - PlatÃ£o",
+  "A leitura fornece materiais para o conhecimento. - John Locke",
+  "NinguÃ©m Ã© livre se nÃ£o for mestre de si mesmo. - Epicteto",
+  "NÃ£o espere que os eventos ocorram como vocÃª deseja. - Epicteto",
+  "A coragem Ã© a resistÃªncia ao medo. - Mark Twain",
+  "Onde hÃ¡ o amor ao homem, hÃ¡ amor Ã  arte mÃ©dica. - HipÃ³crates",
+  "A vida Ã© breve, a arte Ã© longa. - HipÃ³crates",
+  "Quem olha para dentro acorda. - Carl Jung",
+  "Tudo o que nos irrita nos outros nos ensina sobre nÃ³s. - Carl Jung",
+  "A ciÃªncia sem religiÃ£o Ã© manca. - Albert Einstein",
+  "A imaginaÃ§Ã£o Ã© tudo. Ã‰ a prÃ©via das atraÃ§Ãµes da vida. - Albert Einstein",
+  "A paz nÃ£o pode ser mantida Ã  forÃ§a. - Albert Einstein",
+  "Quem nunca cometeu um erro nunca tentou algo novo. - Albert Einstein",
+  "A criatividade Ã© a inteligÃªncia se divertindo. - Albert Einstein",
+  "O Ãºnico erro real Ã© aquele com o qual nÃ£o aprendemos. - Henry Ford",
+  "NÃ£o encontre defeitos, encontre soluÃ§Ãµes. - Henry Ford",
+  "ObstÃ¡culos sÃ£o o que vocÃª vÃª quando tira os olhos do alvo. - Henry Ford",
+  "Pensar Ã© o trabalho mais difÃ­cil que existe. - Henry Ford",
+  "A honra Ã© a poesia do dever. - Alfred de Vigny",
+  "O que vocÃª faz fala tÃ£o alto que nÃ£o ouÃ§o o que vocÃª diz. - Emerson",
+  "O medo Ã© o pai da crueldade. - SÃªneca",
+  "A felicidade nÃ£o Ã© um destino, Ã© um modo de viajar. - Margaret Runbeck",
+  "NÃ£o Ã© o que vocÃª olha que importa, mas o que vocÃª vÃª. - Thoreau",
+  "O segredo da saÃºde mental e corporal Ã© nÃ£o lamentar o passado. - SÃªneca",
+  "Toda reforma interior e toda mudanÃ§a comeÃ§am por um esforÃ§o. - SÃªneca",
+  "O tempo Ã© o melhor conselheiro. - PÃ©ricles",
+  "A amizade duplica as alegrias e divide as angÃºstias. - Francis Bacon",
+  "Quem nÃ£o sabe ser feliz com pouco, nÃ£o serÃ¡ com muito. - SÃªneca",
+  "O destino nÃ£o Ã© uma questÃ£o de sorte, Ã© uma questÃ£o de escolha. - William Jennings Bryan",
+  "NÃ£o espere por circunstÃ¢ncias ideais, crie-as. - George Bernard Shaw",
+  "O entusiasmo Ã© a maior forÃ§a da alma. - Christian Dior",
+  "A mente que se abre a uma nova ideia jamais voltarÃ¡ ao seu tamanho original. - Einstein",
+  "Nada Ã© tÃ£o contagioso quanto o exemplo. - La Rochefoucauld",
+  "O fracasso Ã© o tempero que dÃ¡ sabor ao sucesso. - Truman Capote",
+  "Grandes mentes discutem ideias; mentes mÃ©dias discutem eventos; mentes pequenas discutem pessoas. - Eleanor Roosevelt",
+  "A coragem nÃ£o Ã© a ausÃªncia do medo, mas o julgamento de que algo Ã© mais importante que o medo. - Ambrose Redmoon",
+  "A disciplina Ã© a ponte entre metas e realizaÃ§Ãµes. - Jim Rohn",
+  "Tire proveito de cada erro e vocÃª serÃ¡ um mestre. - ProvÃ©rbio ChinÃªs",
+  "Onde o trabalho Ã© prazer, a vida Ã© alegria. - Maxim Gorky",
+  "A verdadeira grandeza consiste em ser senhor de si mesmo. - SÃªneca",
+  "NinguÃ©m tropeÃ§a sentado. - ProvÃ©rbio JaponÃªs",
+  "A vida nÃ£o Ã© medida pelo nÃºmero de respiraÃ§Ãµes, mas pelos momentos que nos tiram o fÃ´lego. - Maya Angelou",
+  "O homem que nÃ£o lÃª nÃ£o tem vantagem sobre o homem que nÃ£o sabe ler. - Mark Twain",
+  "O otimismo Ã© a fÃ© que leva Ã  realizaÃ§Ã£o. - Helen Keller",
+  "A paciÃªncia Ã© amarga, mas seu fruto Ã© doce. - Jean-Jacques Rousseau",
+  "Para ser feliz, devemos ser mestres de nossa prÃ³pria mente. - SÃªneca",
+  "O que temos atrÃ¡s de nÃ³s e o que temos diante de nÃ³s sÃ£o coisas minÃºsculas comparadas ao que temos dentro de nÃ³s. - Emerson",
+  "O sucesso nÃ£o Ã© a chave para a felicidade. A felicidade Ã© a chave para o sucesso. - Albert Schweitzer",
+  "Onde quer que vocÃª esteja, esteja lÃ¡ por inteiro. - Jim Elliot",
+  "A simplicidade Ã© a chave da verdadeira elegÃ¢ncia. - Coco Chanel",
+  "Tudo o que vocÃª sempre quis estÃ¡ do outro lado do medo. - George Addair",
+  "Se vocÃª quer ir rÃ¡pido, vÃ¡ sozinho. Se vocÃª quer ir longe, vÃ¡ acompanhado. - ProvÃ©rbio Africano",
+  "A melhor maneira de comeÃ§ar Ã© parar de falar e comeÃ§ar a fazer. - Walt Disney",
+  "A vida Ã© 10% o que acontece conosco e 90% como reagimos a isso. - Charles Swindoll",
+  "Acredite que vocÃª pode e vocÃª jÃ¡ estÃ¡ no meio do caminho. - Theodore Roosevelt",
+  "O Ãºnico limite para a nossa realizaÃ§Ã£o de amanhÃ£ serÃ£o as nossas dÃºvidas de hoje. - Franklin D. Roosevelt",
+  "O carÃ¡ter Ã© o que vocÃª faz quando ninguÃ©m estÃ¡ olhando. - Dwight L. Moody",
+  "A oportunidade muitas vezes vem disfarÃ§ada de azar ou derrota temporÃ¡ria. - Napoleon Hill",
+  "NÃ£o deixe o barulho da opiniÃ£o dos outros abafar a sua voz interior. - Steve Jobs",
+  "Sua tarefa Ã© descobrir o seu trabalho e, entÃ£o, com todo o coraÃ§Ã£o, dedicar-se a ele. - Buda",
+  "O conhecimento fala, mas a sabedoria escuta. - Jimi Hendrix",
+  "A maior aventura que vocÃª pode ter Ã© viver a vida dos seus sonhos. - Oprah Winfrey",
+  "A felicidade Ã© quando o que vocÃª pensa, o que vocÃª diz e o que vocÃª faz estÃ£o em harmonia. - Gandhi",
+  "O amor Ã© a Ãºnica forÃ§a capaz de transformar um inimigo em amigo. - Martin Luther King Jr.",
+  "A escuridÃ£o nÃ£o pode expulsar a escuridÃ£o; apenas a luz pode fazer isso. - Martin Luther King Jr.",
+  "O perdÃ£o Ã© um presente que vocÃª dÃ¡ a si mesmo. - Suzanne Somers",
+  "O sucesso Ã© a soma de pequenos esforÃ§os repetidos dia apÃ³s dia. - Robert Collier",
+  "Se vocÃª nÃ£o pode fazer grandes coisas, faÃ§a pequenas coisas de uma maneira excelente. - Napoleon Hill",
+  "A Ãºnica maneira de fazer um excelente trabalho Ã© amar o que vocÃª faz. - Steve Jobs",
+  "A vida Ã© o que acontece enquanto vocÃª estÃ¡ ocupado fazendo outros planos. - John Lennon",
+  "O tempo Ã© limitado, por isso nÃ£o o gaste vivendo a vida de outra pessoa. - Steve Jobs",
+  "Mantenha o seu rosto sempre em direÃ§Ã£o ao sol, e as sombras cairÃ£o atrÃ¡s de vocÃª. - Walt Whitman",
+  "NÃ£o Ã© a carga que o quebra, mas a maneira como vocÃª a carrega. - Lou Holtz",
+  "O que nÃ£o comeÃ§amos hoje nunca termina amanhÃ£. - Goethe",
+  "A maior glÃ³ria em viver nÃ£o reside em nunca cair, mas em nos levantarmos cada vez que caÃ­mos. - Nelson Mandela",
+  "Onde nÃ£o hÃ¡ luta, nÃ£o hÃ¡ forÃ§a. - Oprah Winfrey",
+  "O sonho Ã© o roteiro que a nossa alma escreve para o nosso destino. - AnÃ´nimo",
+  "A gratidÃ£o transforma o que temos em suficiente. - AnÃ´nimo",
+  "NÃ£o conte os seus problemas, conte as suas bÃªnÃ§Ã£os. - ProvÃ©rbio Popular",
+  "A mente Ã© tudo. O que vocÃª pensa, vocÃª se torna. - Buda",
+  "O segredo da liberdade Ã© a coragem. - PÃ©ricles",
+  "A sabedoria Ã© a parte suprema da felicidade. - SÃ³focles",
+  "Nada de grande no mundo foi realizado sem paixÃ£o. - Hegel",
+  "A vida Ã© uma jornada, nÃ£o um destino. - Emerson",
+  "A excelÃªncia nÃ£o Ã© um ato, mas um hÃ¡bito. - AristÃ³teles",
+  "O ignorante afirma, o sÃ¡bio duvida, o sensato reflete. - AristÃ³teles",
+  "A amizade Ã© uma alma que habita em dois corpos. - AristÃ³teles",
+  "A base de toda sociedade Ã© a educaÃ§Ã£o de seus jovens. - AristÃ³teles",
+  "As raÃ­zes da educaÃ§Ã£o sÃ£o amargas, mas o fruto Ã© doce. - AristÃ³teles",
+  "A coragem Ã© a primeira das qualidades humanas porque Ã© a qualidade que garante as outras. - Winston Churchill",
+  "O sucesso nÃ£o Ã© final, o fracasso nÃ£o Ã© fatal: Ã© a coragem de continuar que conta. - Winston Churchill",
+  "Melhor lutar por algo do que viver por nada. - Winston Churchill",
+  "Se vocÃª estÃ¡ atravessando o inferno, continue indo. - Winston Churchill",
+  "A polÃ­tica Ã© a arte do possÃ­vel. - Otto von Bismarck",
+  "A liberdade sem ordem Ã© o caos. - AnÃ´nimo",
+  "O homem Ã© um animal polÃ­tico. - AristÃ³teles",
+  "A verdade vos libertarÃ¡. - JoÃ£o 8:32",
+  "Amai-vos uns aos outros como eu vos amei. - Jesus Cristo",
+  "Bem-aventurados os pacÃ­ficos. - Mateus 5:9",
+  "NÃ£o julgueis para nÃ£o serdes julgados. - Mateus 7:1",
+  "PeÃ§am e lhes serÃ¡ dado; busquem e encontrarÃ£o. - Mateus 7:7",
+  "A boca fala do que estÃ¡ cheio o coraÃ§Ã£o. - Mateus 12:34",
+  "O amor Ã© paciente, o amor Ã© bondoso. - 1 CorÃ­ntios 13:4",
+  "Agora, pois, permanecem a fÃ©, a esperanÃ§a e o amor. - 1 CorÃ­ntios 13:13",
+  "Tudo posso naquele que me fortalece. - Filipenses 4:13",
+  "A fÃ© Ã© a certeza daquilo que esperamos. - Hebreus 11:1",
+  "NÃ£o andeis ansiosos por coisa alguma. - Filipenses 4:6",
+  "Sede fortes e corajosos. - JosuÃ© 1:9",
+  "O Senhor Ã© o meu pastor, nada me faltarÃ¡. - Salmos 23:1",
+  "Ainda que eu andasse pelo vale da sombra da morte, nÃ£o temeria mal algum. - Salmos 23:4",
+  "LÃ¢mpada para os meus pÃ©s Ã© a tua palavra. - Salmos 119:105",
+  "O temor do Senhor Ã© o princÃ­pio da sabedoria. - ProvÃ©rbios 1:7",
+  "Filho meu, guarda o teu coraÃ§Ã£o. - ProvÃ©rbios 4:23",
+  "A resposta calma desvia a fÃºria. - ProvÃ©rbios 15:1",
+  "O coraÃ§Ã£o alegre aformoseia o rosto. - ProvÃ©rbios 15:13",
+  "O ferro com o ferro se afia. - ProvÃ©rbios 27:17",
+  "Como o homem pensa em sua alma, assim ele Ã©. - ProvÃ©rbios 23:7",
+  "Para tudo hÃ¡ uma ocasiÃ£o certa. - Eclesiastes 3:1",
+  "A sabedoria Ã© melhor que a forÃ§a. - Eclesiastes 9:16",
+  "O que Ã© torto nÃ£o se pode endireitar. - Eclesiastes 1:15",
+  "Melhor Ã© a sabedoria do que as joias preciosas. - ProvÃ©rbios 8:11",
+  "A soberba do homem o abaterÃ¡. - ProvÃ©rbios 29:23",
+  "Onde nÃ£o hÃ¡ conselho os projetos saem vÃ£os. - ProvÃ©rbios 15:22",
+  "A paciÃªncia vale mais que a forÃ§a. - ProvÃ©rbios 16:32",
+  "O espÃ­rito do homem o sustenta na doenÃ§a. - ProvÃ©rbios 18:14",
+  "O que adquire entendimento ama a sua alma. - ProvÃ©rbios 19:8",
+  "A glÃ³ria dos jovens Ã© a sua forÃ§a. - ProvÃ©rbios 20:29",
+  "O prudente vÃª o mal e esconde-se. - ProvÃ©rbios 22:3",
+  "NÃ£o te fatigues para seres rico. - ProvÃ©rbios 23:4",
+  "Como a cidade derrubada Ã© o homem que nÃ£o pode conter o seu espÃ­rito. - ProvÃ©rbios 25:28",
+  "Fiel Ã© a ferida feita pelo que ama. - ProvÃ©rbios 27:6",
+  "O que confia no seu prÃ³prio coraÃ§Ã£o Ã© tolo. - ProvÃ©rbios 28:26",
+  "O homem que caminha na integridade caminha seguro. - ProvÃ©rbios 10:9",
+  "A memÃ³ria do justo Ã© abenÃ§oada. - ProvÃ©rbios 10:7",
+  "Na multidÃ£o de palavras nÃ£o falta pecado. - ProvÃ©rbios 10:19",
+  "A bÃªnÃ§Ã£o do Senhor Ã© que enriquece. - ProvÃ©rbios 10:22",
+  "A esperanÃ§a dos justos Ã© alegria. - ProvÃ©rbios 10:28",
+  "Vindo a soberba, virÃ¡ tambÃ©m a afronta. - ProvÃ©rbios 11:2",
+  "O que despreza o seu prÃ³ximo carece de entendimento. - ProvÃ©rbios 11:12",
+  "O que espalha liberalmente ainda sobra mais. - ProvÃ©rbios 11:24",
+  "A alma generosa prosperarÃ¡. - ProvÃ©rbios 11:25",
+  "O que confia nas suas riquezas cairÃ¡. - ProvÃ©rbios 11:28",
+  "O que ama a instruÃ§Ã£o ama o conhecimento. - ProvÃ©rbios 12:1",
+  "O caminho do insensato Ã© reto aos seus prÃ³prios olhos. - ProvÃ©rbios 12:15",
+  "A ansiedade no coraÃ§Ã£o deixa o homem abatido. - ProvÃ©rbios 12:25",
+  "O que guarda a sua boca guarda a sua alma. - ProvÃ©rbios 13:3",
+  "A esperanÃ§a adiada adoece o coraÃ§Ã£o. - ProvÃ©rbios 13:12",
+  "O que anda com os sÃ¡bios ficarÃ¡ sÃ¡bio. - ProvÃ©rbios 13:20",
+  "O que poupa a sua vara odeia a seu filho. - ProvÃ©rbios 13:24",
+  "O sÃ¡bio teme e desvia-se do mal. - ProvÃ©rbios 14:16",
+  "O coraÃ§Ã£o conhece a sua prÃ³pria amargura. - ProvÃ©rbios 14:10",
+  "Na muita fadiga hÃ¡ proveito. - ProvÃ©rbios 14:23",
+  "A ira Ã© cruel e o furor impetuoso. - ProvÃ©rbios 27:4",
+  "Melhor Ã© a repreensÃ£o aberta do que o amor encoberto. - ProvÃ©rbios 27:5",
+  "O homem que se desvia do caminho do entendimento repousarÃ¡ na congregaÃ§Ã£o dos mortos. - ProvÃ©rbios 21:16",
+  "O que segue a justiÃ§a e a benevolÃªncia acharÃ¡ a vida. - ProvÃ©rbios 21:21",
+  "O cavalo prepara-se para o dia da batalha, mas do Senhor vem a vitÃ³ria. - ProvÃ©rbios 21:31",
+  "Vale mais o bom nome do que as muitas riquezas. - ProvÃ©rbios 22:1",
+  "Instrui a crianÃ§a no caminho em que deve andar. - ProvÃ©rbios 22:6",
+  "O que semeia a injustiÃ§a colherÃ¡ males. - ProvÃ©rbios 22:8",
+  "NÃ£o removas os limites antigos. - ProvÃ©rbios 22:28",
+  "NÃ£o comas o pÃ£o daquele que tem os olhos invejosos. - ProvÃ©rbios 23:6",
+  "Compra a verdade e nÃ£o a vendas. - ProvÃ©rbios 23:23",
+  "Com sabedoria se edifica a casa. - ProvÃ©rbios 24:3",
+  "Se te mostrares frouxo no dia da angÃºstia, a tua forÃ§a serÃ¡ pequena. - ProvÃ©rbios 24:10",
+  "NÃ£o te alegres quando cair o teu inimigo. - ProvÃ©rbios 24:17",
+  "A palavra dita a seu tempo Ã© como maÃ§Ã£s de ouro. - ProvÃ©rbios 25:11",
+  "Como o frio da neve no tempo da sega, assim Ã© o mensageiro fiel. - ProvÃ©rbios 25:13",
+  "O que nÃ£o tem domÃ­nio prÃ³prio Ã© como uma cidade sem muros. - ProvÃ©rbios 25:28",
+  "NÃ£o te glories do dia de amanhÃ£. - ProvÃ©rbios 27:1",
+  "O que confessa e deixa suas transgressÃµes alcanÃ§arÃ¡ misericÃ³rdia. - ProvÃ©rbios 28:13",
+  "O que dÃ¡ ao pobre nÃ£o terÃ¡ necessidade. - ProvÃ©rbios 28:27",
+  "Sem profecia, o povo se corrompe. - ProvÃ©rbios 29:18",
+  "O homem que lisonjeia o seu prÃ³ximo arma-lhe uma rede. - ProvÃ©rbios 29:5",
+  "A vara e a repreensÃ£o dÃ£o sabedoria. - ProvÃ©rbios 29:15",
+  "O medo do homem arma laÃ§os. - ProvÃ©rbios 29:25",
+  "Quem Ã© vocÃª para julgar o servo alheio? - Romanos 14:4",
+  "O Reino de Deus nÃ£o Ã© comida nem bebida, mas justiÃ§a e paz. - Romanos 14:17",
+  "NÃ£o se deixem enganar: as mÃ¡s companhias corrompem os bons costumes. - 1 CorÃ­ntios 15:33",
+  "Fiquem alertas, permaneÃ§am firmes na fÃ©, sejam corajosos, sejam fortes. - 1 CorÃ­ntios 16:13",
+  "Que tudo o que vocÃªs fizerem seja feito com amor. - 1 CorÃ­ntios 16:14",
+  "NÃ£o nos cansemos de fazer o bem. - GÃ¡latas 6:9",
+  "Sejam bondosos e compassivos uns para com os outros. - EfÃ©sios 4:32",
+  "Vivam como filhos da luz. - EfÃ©sios 5:8",
+  "Aproveitem bem cada oportunidade. - EfÃ©sios 5:16",
+  "Tudo o que fizerem, faÃ§am de todo o coraÃ§Ã£o. - Colossenses 3:23",
+  "Sejam sÃ¡bios no procedimento para com os de fora. - Colossenses 4:5",
+  "Esforcem-se para viver em paz com todos. - Hebreus 12:14",
+  "Sejam praticantes da palavra, e nÃ£o apenas ouvintes. - Tiago 1:22",
+  "Onde hÃ¡ inveja e ambiÃ§Ã£o egoÃ­sta, hÃ¡ confusÃ£o. - Tiago 3:16",
+  "Acima de tudo, amem-se sinceramente uns aos outros. - 1 Pedro 4:8",
+  "Lancem sobre ele toda a sua ansiedade, porque ele tem cuidado de vocÃªs. - 1 Pedro 5:7",
+  "Aquele que nÃ£o ama nÃ£o conhece a Deus. - 1 JoÃ£o 4:8",
+  "NÃ£o amemos de palavra, mas de fato e de verdade. - 1 JoÃ£o 3:18",
+  "O amor lanÃ§a fora todo o medo. - 1 JoÃ£o 4:18",
+  "Pois o exercÃ­cio fÃ­sico tem algum valor, mas a piedade tem valor para tudo. - 1 TimÃ³teo 4:8",
+  "Pois Deus nÃ£o nos deu espÃ­rito de covardia, mas de poder e amor. - 2 TimÃ³teo 1:7",
+  "O que vocÃª ouviu de mim, transmita a pessoas dignas de confianÃ§a. - 2 TimÃ³teo 2:2",
+  "Fuja dos desejos malignos da juventude. - 2 TimÃ³teo 2:22",
+  "Saiba que nos Ãºltimos dias sobrevirÃ£o tempos terrÃ­veis. - 2 TimÃ³teo 3:1",
+  "Prega a palavra, insiste a tempo e fora de tempo. - 2 TimÃ³teo 4:2",
+  "Quanto a vocÃª, seja equilibrado em tudo. - 2 TimÃ³teo 4:5",
+  "Para os puros, todas as coisas sÃ£o puras. - Tito 1:15",
+  "Evite perguntas tolas e genealogias. - Tito 3:9",
+  "O homem que segue a justiÃ§a acharÃ¡ a vida. - ProvÃ©rbios 21:21",
+  "A humildade precede a honra. - ProvÃ©rbios 15:33",
+  "A sabedoria habita com a prudÃªncia. - ProvÃ©rbios 8:12",
+  "O espÃ­rito paciente Ã© melhor que o orgulhoso. - Eclesiastes 7:8",
+  "NÃ£o se apresse em seu espÃ­rito a irar-se. - Eclesiastes 7:9",
+  "A sabedoria dÃ¡ vida a quem a possui. - Eclesiastes 7:12",
+  "Deus fez o homem reto, mas ele buscou muitas invenÃ§Ãµes. - Eclesiastes 7:29",
+  "Onde estÃ¡ a palavra do rei, ali hÃ¡ poder. - Eclesiastes 8:4",
+  "Quem guarda o mandamento nÃ£o experimentarÃ¡ nenhum mal. - Eclesiastes 8:5",
+  "Pois para todo propÃ³sito hÃ¡ tempo e modo. - Eclesiastes 8:6",
+  "O que trabalha a terra fartar-se-Ã¡ de pÃ£o. - ProvÃ©rbios 12:11",
+  "A lÃ­ngua dos sÃ¡bios Ã© saÃºde. - ProvÃ©rbios 12:18",
+  "O desejo que se cumpre Ã© doce para a alma. - ProvÃ©rbios 13:19",
+  "O coraÃ§Ã£o do entendido busca o conhecimento. - ProvÃ©rbios 15:14",
+  "A sabedoria Ã© o alvo de quem tem entendimento. - ProvÃ©rbios 17:24",
+  "O espÃ­rito firme sustenta o homem na dor. - ProvÃ©rbios 18:14",
+  "Quem adquire sabedoria ama a si mesmo. - ProvÃ©rbios 19:8",
+  "O conselho no coraÃ§Ã£o Ã© como Ã¡guas profundas. - ProvÃ©rbios 20:5",
+  "A alma generosa prosperarÃ¡. - ProvÃ©rbios 11:25",
+  "O que confia no Senhor serÃ¡ prosperado. - ProvÃ©rbios 28:25",
+  "O fim de todas as coisas está próximo; sede equilibrados. - 1 Pedro 4:7",
+];
+
+
+<script>
+const qs = ["Nível de estresse","Qualidade do sono","Foco mental","Motivação","Equilíbrio emocional","Esperança","Autocontrole","Bem-estar geral"];
+
+function irPara(id) {
+  document.querySelectorAll('#plano-recepcao,#plano-autoavaliacao,#plano-resultado,#plano-conteudo,#plano-crises').forEach(e => {
+    if(e) e.style.display = 'none';
+  });
+  const alvo = document.getElementById(id);
+  if (alvo) {
+    alvo.style.display = 'block';
+    // É aqui que o botão "ganha vida" e abre as perguntas
+    if (id === 'plano-autoavaliacao') gerarQuestoes();
+  }
+}
+
+function gerarQuestoes() {
+  const container = document.getElementById('questoes');
+  if (container) {
+    container.innerHTML = "";
+    qs.forEach((q, i) => {
+      container.innerHTML += `<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;">
+        <span>${q}</span>
+        <input type="number" id="q${i+1}" class="nota" min="0" max="10" value="5">
+      </div>`;
+    });
+  }
+}
+
+function verResultado() {
+  let somaTotal = 0;
+  for (let i = 1; i <= 8; i++) {
+    const campo = document.getElementById(`q${i}`);
+    if(campo) somaTotal += Number(campo.value);
+  }
+  
+  // Sua lógica: 80 pontos max * 12.5 = 1000 (Score Centenal)
+  const scoreCentenal = somaTotal * 12.5;
+  const notaMC = scoreCentenal / 100;
+  
+  if(document.getElementById('v-mc')) document.getElementById('v-mc').innerText = notaMC.toFixed(1);
+  if(document.getElementById('v-sc')) document.getElementById('v-sc').innerText = Math.round(scoreCentenal);
+  
+  // Gira o ponteiro baseado no seu score de 0 a 1000
+  const ponteiro = document.getElementById('ptr-vivo');
+  if(ponteiro) {
+    const angulo = (scoreCentenal / 1000) * 180;
+    ponteiro.style.transform = `rotate(${angulo - 180}deg)`;
+  }
+  
+  irPara('plano-resultado');
+}
+
+window.onload = () => irPara('plano-recepcao');
+</script>
+</body>
+</html>
         <div style="flex:1"><h2>Terapeuta Digital</h2><small>Qualificação do Estar</small></div>
     </div>
 
